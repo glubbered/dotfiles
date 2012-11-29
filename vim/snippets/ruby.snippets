@@ -1,0 +1,14 @@
+snippet des
+	describe "${1:subject}" do
+		${2}
+	end
+snippet its
+	it "should ${1}" do
+		${2}
+	end
+snippet itbs
+	it { should ${1} }
+snippet itb
+	it { ${1} }
+snippet shhc
+	should have_content(${1})
