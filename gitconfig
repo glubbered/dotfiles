@@ -1,0 +1,29 @@
+[user]
+	name = wedens
+	email = wedens13@yandex.ru
+[core]
+	autocrlf = false
+	safecrlf = true
+	editor = gvim -f
+    excludesfile = ~/.gitignore
+[push]
+	default = current
+[color]
+    branch = auto
+    diff = auto
+    status = auto
+[alias]
+    co = checkout
+    cl = clone
+    ci = commit
+    st = status
+    br = branch
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --oneline --decorate --all --date=short
+    type = cat-file -t
+    dump = cat-file -p
+    ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+    lds = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
+    dl = "!git ll -1"
+    assume = update-index --assume-unchanged
+    unassume = update-index --no-assume-unchanged
+    assumed = "!git ls-files -v | grep ^h | cut -c 3-"
