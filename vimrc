@@ -441,4 +441,14 @@ nmap <leader>gc :Gcommit<CR>
 nmap <leader>gp :Git push<CR>
 imap <C-o> <esc>o
 
-
+"" Tab navigation
+" Easily create a new tab.
+map <Leader>tt :tabnew<CR>
+" Easily close a tab.
+map <Leader>tc :tabclose<CR>
+" Easily move a tab.
+noremap <Leader>tm :tabmove<CR>
+" Easily go to next tab.
+noremap <Leader>tn :tabnext<CR>
+" Easily go to previous tab.
+noremap <Leader>tp :tabprevious<CR>
