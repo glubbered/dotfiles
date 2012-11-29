@@ -8,8 +8,13 @@ rerun.txt
 tmp/**/*
 !tmp/cache/.keep
 vendor/bundler_gems
-vim/.netrwhist
 zeus.json
-.vim/.netrwhist
 doc/tags
 .Rhistory
+.netrwhist
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*.pyc
+*.pyo
