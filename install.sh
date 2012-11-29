@@ -4,3 +4,4 @@ ln -s -f ~/dotfiles/gitignore ~/.gitignore
 ln -s -f ~/dotfiles/tmux.conf ~/.tmux.conf
 ln -s -f ~/dotfiles/vimrc ~/.vimrc
 ln -s -f ~/dotfiles/vim ~/.vim
+ln -s -f ~/dotfiles/ackrc ~/.ackrc
