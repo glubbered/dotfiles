@@ -13,21 +13,28 @@ call pathogen#helptags()
 ""
 "" Basic Setup
 ""
-set number            " Show line numbers
-set ruler             " Show line and column number
-set encoding=utf-8    " Set default encoding to UTF-8
-set t_vb=             " disable visual bell
+" No annoying sound on errors
+set t_vb=
 set noerrorbells
 set novisualbell
+set encoding=utf-8    " Set default encoding to UTF-8
 filetype plugin on    " load ftplugins
 filetype indent on    " load indent files
 set hidden            " allow buffer switching without saving
 set history=1000      " store commands history
 set autoread          " auto read when a file is change from the outside
-set showmatch         " show matching brackets when cursor is over them
-set mat=2             " How many tenths of a second to blink when matching brackets
 set clipboard=unnamed " yank to the system register (*) by default
+set grepprg=ack       " replace the default grep program with ack
 
+""
+"" Display
+""
+set ffs=unix,dos,mac  " Try recognizing dos, unix, and mac line endings.
+set number            " Show line numbers
+set ruler             " Show line and column number
+set showmatch         " show matching brackets when cursor is over them
+set matchpairs+=<:>   " specially for html
+set mat=2             " How many tenths of a second to blink when matching brackets
 set t_Co=256          " enable 256-color mode.
 set background=dark   " assume a dark background
 colorscheme jellybeans
@@ -88,10 +95,10 @@ endif
 ""
 "" Folding
 ""
-set foldmethod=indent   "fold based on indent
+set foldmethod=marker   "detect triple-{ style fold markers
 set foldnestmax=3       "deepest fold is 3 levels
 set nofoldenable        "dont fold by default
-
+set foldopen=block,hor,insert,jump,mark,percent,quickfix,search,tag,undo "which commands trigger auto-unfold
 ""
 "" Scrolling
 ""
@@ -232,25 +239,27 @@ let g:SuperTabContextDiscoverDiscovery =
 let g:SuperTabRetainCompletionDuration = 'insert'
 let g:SuperTabNoCompleteBefore = []
 let g:SuperTabNoCompleteAfter = ['^', '\s', ',']
-"
+
 ""
 "" NERDTree
 ""
+" Show the bookmarks table on startup
 let NERDTreeShowBookmarks=1
 " exclude
 let NERDTreeIgnore=['\.pyc', '\~$', '\.swo$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
 let NERDTreeChDirMode=0
 " quit NERDTree after openning a file
 let NERDTreeQuitOnOpen=1
+" Use a single click to fold/unfold directories and a double click to open files
 let NERDTreeMouseMode=2
 " show hidden files and directories
 let NERDTreeShowHidden=1
 let NERDTreeKeepTreeInNewTab=1
 let g:nerdtree_tabs_open_on_gui_startup=0
-" Make nerdtree look nice
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 let g:NERDTreeWinSize = 30
+" Highlight the selected entry in the tree
 let NERDTreeHighlightCursorline = 1
 let g:NERDShutUp=1
 
@@ -320,12 +329,6 @@ nmap <leader>hs :set hlsearch! hlsearch?<CR>
 " Yank from the cursor to the end of the line, to be consistent with C and D.
 nnoremap Y y$
 
-" Useful mappings for managing tabs
-map <leader>tn :tabnew<cr>
-map <leader>to :tabonly<cr>
-map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove
-
 "key mapping for window navigation
 map <C-h> <C-w>h
 map <C-j> <C-w>j
@@ -347,6 +350,9 @@ nmap <C-w><Del> <Plug>Kwbd
 
 " key mapping for saving file
 nmap <leader>w :w<CR>
+"
+" Quickly close the current window
+nnoremap <leader>q :q<CR>
 
 " Do not lost block selection after indentation
 vmap > >gv
@@ -412,6 +418,13 @@ vmap <leader>a> :call IndentRHashes()<CR>
 "First equals sign
 nmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
 vmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
+
+" Folding
+nnoremap <Space> za
+vnoremap <Space> za
+
+" Reselect text that was just pasted with ,v
+nnoremap <leader>v V`]
 
 ""
 "" Surround

@@ -25,7 +25,7 @@ psgrep() {
         echo "!! Need name to grep for"
     fi
 }
-#
+
 # Killing tomcat
 killtom() {
     pid=$(ps aux | grep apache-tomcat | grep 'bin/java' | grep -v grep | awk '{print $2}')
@@ -37,6 +37,37 @@ killtom() {
         kill -9 $pid
     fi
 }
+
+# create a new script, automatically populating the shebang line, editing the
+# script, and making it executable.
+# http://www.commandlinefu.com/commands/view/8050/
+shebang() {
+  if i=$(which $1);
+  then
+    printf '#!/usr/bin/env %s\n\n' $1 > $2 && chmod 755 $2 && vim + $2 && chmod 755 $2;
+  else
+    echo "'which' could not find $1, is it in your \$PATH?";
+  fi;
+  # in case the new script is in path, this throw out the command hash table and
+  # start over (man zshbuiltins)
+  rehash
+}
+
+# http://www.commandlinefu.com/commands/view/7294/backup-a-file-with-a-date-time-stamp
+buf () {
+    oldname=$1;
+    if [ "$oldname" != "" ]; then
+        datepart=$(date +%Y-%m-%d);
+        firstpart=`echo $oldname | cut -d "." -f 1`;
+        newname=`echo $oldname | sed s/$firstpart/$firstpart.$datepart/`;
+        cp -R ${oldname} ${newname};
+    fi
+}
+
+# Top ten memory hogs
+memtop() {ps -eorss,args | sort -nr | pr -TW$COLUMNS | head}
+
+
 
 if [ -f ~/.zshrc.local ]
 then
