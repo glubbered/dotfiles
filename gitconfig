@@ -13,6 +13,9 @@
     diff = auto
     status = auto
 [alias]
+    c = commit -m
+    ps = push
+    pl = pull
     co = checkout
     cl = clone
     ci = commit
