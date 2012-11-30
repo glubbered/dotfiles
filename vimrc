@@ -73,15 +73,17 @@ set noswapfile
 ""
 "" Statusline
 ""
-set laststatus=2
+if has("statusline")
+  set laststatus=2
 
-" Broken down into easily includeable segments
-set statusline=%<%f\                     " Filename
-set statusline+=%w%h%m%r                 " Options
-set statusline+=%{fugitive#statusline()} " Git Hotness
-set statusline+=\ [%{&ff}/%Y]            " filetype
-set statusline+=\ [%{getcwd()}]          " current dir
-set statusline+=%=%-14.(%l,%c%V%)\ %p%%  " Right aligned file nav info
+  " Broken down into easily includeable segments
+  set statusline=%<%f\                     " Filename
+  set statusline+=%w%h%m%r                 " Options
+  set statusline+=%{fugitive#statusline()} " Git Hotness
+  set statusline+=\ [%{&ff}/%Y]            " filetype
+  set statusline+=\ [%{getcwd()}]          " current dir
+  set statusline+=%=%-14.(%l,%c%V%)\ %p%%  " Right aligned file nav info
+endif
 
 ""
 "" Folding
@@ -100,6 +102,7 @@ set sidescroll=1     " Number of cols to scroll at a time
 ""
 "" Completion
 ""
+set completeopt=menu,preview,longest
 set wildmode=list:longest
 set wildmenu "enable ctrl-n and ctrl-p to scroll thru matches
 set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
@@ -123,12 +126,15 @@ if has("autocmd") && exists("+omnifunc")
               \ endif
 endif
 
+" automatically open and close the popup menu / preview window
+au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
+
 ""
 "" Editor
 ""
 set formatoptions-=o 	  "dont continue comments when pushing o/O
 set virtualedit=onemore " allow for cursor beyond last character
-
+set viewoptions=folds,options,cursor,unix,slash " better unix / windows compatibility
 " Strip trailing whitespace
 function! <SID>StripTrailingWhitespaces()
     " Preparation: save last search, and cursor position.
@@ -238,6 +244,7 @@ let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 let g:NERDTreeWinSize = 30
 let NERDTreeHighlightCursorline = 1
+let g:NERDShutUp=1
 
 ""
 "" ctrlP
@@ -452,3 +459,14 @@ noremap <Leader>tm :tabmove<CR>
 noremap <Leader>tn :tabnext<CR>
 " Easily go to previous tab.
 noremap <Leader>tp :tabprevious<CR>
+
+"" shift key typos fixes
+command! -bang -nargs=* -complete=file E e<bang> <args>
+command! -bang -nargs=* -complete=file W w<bang> <args>
+command! -bang -nargs=* -complete=file Wq wq<bang> <args>
+command! -bang -nargs=* -complete=file WQ wq<bang> <args>
+command! -bang Wa wa<bang>
+command! -bang WA wa<bang>
+command! -bang Q q<bang>
+command! -bang QA qa<bang>
+command! -bang Qa qa<bang>

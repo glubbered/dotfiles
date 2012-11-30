@@ -124,3 +124,6 @@
 [submodule "vim/bundle/vim-tmux"]
 	path = vim/bundle/vim-tmux
 	url = git://github.com/peterhoeg/vim-tmux.git
+[submodule "vim/bundle/YankRing"]
+	path = vim/bundle/YankRing
+	url = git://github.com/vim-scripts/YankRing.vim.git
