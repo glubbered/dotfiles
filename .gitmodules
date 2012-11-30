@@ -52,9 +52,6 @@
 [submodule "vim/bundle/vim-javascript"]
 	path = vim/bundle/vim-javascript
 	url = ssh://git@github.com/pangloss/vim-javascript.git
-[submodule "vim/bundle/vim-css-color"]
-	path = vim/bundle/vim-css-color
-	url = ssh://git@github.com/ap/vim-css-color.git
 [submodule "vim/bundle/nerdcommenter"]
 	path = vim/bundle/nerdcommenter
 	url = ssh://git@github.com/scrooloose/nerdcommenter.git

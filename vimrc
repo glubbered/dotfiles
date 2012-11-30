@@ -170,7 +170,7 @@ endif
 
 
 " treat scss files also as css
-autocmd BufNewFile,BufRead *.scss             set ft=scss.css
+"autocmd BufNewFile,BufRead *.scss             set ft=scss.css
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" PLUGINS SETTINGS """""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
