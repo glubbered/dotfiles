@@ -25,3 +25,20 @@ psgrep() {
         echo "!! Need name to grep for"
     fi
 }
+#
+# Killing tomcat
+killtom() {
+    pid=$(ps aux | grep apache-tomcat | grep 'bin/java' | grep -v grep | awk '{print $2}')
+    if [ -z "$pid" ]
+    then
+        echo "Tomcat is not running!"
+    else
+        echo "Killing Tomcat PID: $pid"
+        kill -9 $pid
+    fi
+}
+
+if [ -f ~/.zshrc.local ]
+then
+  source ~/.zshrc.local
+fi
