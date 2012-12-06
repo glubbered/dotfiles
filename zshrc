@@ -16,6 +16,14 @@ eval `dircolors -b ~/dotfiles/dircolors`
 
 # run tmux in color mode
 alias tmux='tmux -2'
+# Enhanced WHOIS lookups
+alias whois="whois -h whois-servers.net"
+# View HTTP traffic
+alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+# URL-encode strings
+alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'
+
 
 psgrep() {
     if [ ! -z $1 ] ; then
@@ -37,6 +45,7 @@ killtom() {
         kill -9 $pid
     fi
 }
+
 
 # create a new script, automatically populating the shebang line, editing the
 # script, and making it executable.
