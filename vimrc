@@ -26,6 +26,8 @@ set autoread          " auto read when a file is change from the outside
 set clipboard=unnamed " yank to the system register (*) by default
 set grepprg=ack       " replace the default grep program with ack
 
+
+
 ""
 "" Display
 ""
@@ -40,6 +42,13 @@ set background=dark   " assume a dark background
 colorscheme jellybeans
 set cursorline        " highlight current line
 syntax enable         " Turn on syntax highlighting allowing local overrides
+" Use nicer representations when showing invisible characters.
+set listchars=""
+set listchars+=tab:\▸\ ,trail:·,extends:»,precedes:«
+set showbreak=↪
+" Don't render tag contents with bold, italic & underline in HTML.
+let html_no_rendering=1
+
 
 ""
 "" Whitespace and indentation
@@ -49,18 +58,11 @@ set tabstop=2                     " a tab is two spaces
 set shiftwidth=2                  " an autoindent (with <<) is two spaces
 set softtabstop=2
 set expandtab                     " use spaces, not tabs
-set smarttab
+set smarttab                      " Use shift-width for tabbing. Ignore tabstop & softtabstop.
 set list                          " Show invisible characters
 set backspace=indent,eol,start    " backspace through everything in insert mode
 set autoindent                    " indent at the same level of the previous line
-" List chars
-set listchars=""                  " Reset the listchars
-set listchars=tab:\ \             " a tab should display as "  ", trailing whitespace as "."
-set listchars+=trail:.            " show trailing spaces as dots
-set listchars+=extends:>          " The character to show in the last column when wrap is
-                                  " off and the line continues beyond the right of the screen
-set listchars+=precedes:<         " The character to show in the last column when wrap is
-                                  " off and the line continues beyond the right of the screen
+
 
 ""
 "" Searching
@@ -80,7 +82,8 @@ set noswapfile
 ""
 "" Statusline
 ""
-if has("statusline")
+" unless we're using powerline
+if !exists('g:Powerline_loaded') || !g:Powerline_loaded
   set laststatus=2
 
   " Broken down into easily includeable segments
@@ -99,6 +102,7 @@ set foldmethod=marker   "detect triple-{ style fold markers
 set foldnestmax=3       "deepest fold is 3 levels
 set nofoldenable        "dont fold by default
 set foldopen=block,hor,insert,jump,mark,percent,quickfix,search,tag,undo "which commands trigger auto-unfold
+
 ""
 "" Scrolling
 ""
@@ -219,7 +223,9 @@ let g:snipMate.scope_aliases['javascript'] = 'javascript,javascript-jquery'
 ""
 "" Vroom
 ""
-let g:vroom_use_vimux = 1 " use vimux when running tests by vroom
+if $TMUX != ''
+  let g:vroom_use_vimux = 1 " use vimux when running tests by vroom
+end
 
 ""
 "" Vimux
@@ -408,14 +414,14 @@ map ,hi :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 " Ruby 1.9 hashes
 nmap <leader>a: :Tab/\w:\zs/l0l1<CR>
 vmap <leader>a: :Tab/\w:\zs/l0l1<CR>
-" Ruby => hashes
+" Ruby hash rocket
 function IndentRHashes()
   Tabularize /^[^:]*\zs:/r1c0l0
   Tabularize /^[^=>]*\zs=>/l1
 endfunction
 nmap <leader>a> :call IndentRHashes()<CR>
 vmap <leader>a> :call IndentRHashes()<CR>
-"First equals sign
+" First equals sign
 nmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
 vmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
 
@@ -491,3 +497,10 @@ command! -bang WA wa<bang>
 command! -bang Q q<bang>
 command! -bang QA qa<bang>
 command! -bang Qa qa<bang>
+
+" Toggle zooming (temporarily display only the current one of multiple windows).
+noremap <leader>o :ZoomWin<cr>
+
+" Quickly switch between two most common white-space set-ups.
+noremap <leader>2 :set ts=2 sts=2 sw=2 expandtab<cr>
+noremap <leader>4 :set ts=4 sts=4 sw=4 expandtab<cr>
