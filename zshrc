@@ -77,6 +77,11 @@ buf () {
 memtop() {ps -eorss,args | sort -nr | pr -TW$COLUMNS | head}
 
 alias finddups="find -type f -exec md5sum '{}' ';' | sort | uniq --all-repeated=separate -w 33 | cut -c 35-"
+# history search
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+bindkey '^P' history-search-backward
+bindkey '^N' history-search-forward
 
 if [ -f ~/.zshrc.local ]
 then
