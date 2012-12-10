@@ -76,7 +76,7 @@ buf () {
 # Top ten memory hogs
 memtop() {ps -eorss,args | sort -nr | pr -TW$COLUMNS | head}
 
-
+alias finddups="find -type f -exec md5sum '{}' ';' | sort | uniq --all-repeated=separate -w 33 | cut -c 35-"
 
 if [ -f ~/.zshrc.local ]
 then
