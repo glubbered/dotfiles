@@ -76,7 +76,11 @@ buf () {
 # Top ten memory hogs
 memtop() {ps -eorss,args | sort -nr | pr -TW$COLUMNS | head}
 
-
+# history search
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+bindkey '^P' history-search-backward
+bindkey '^N' history-search-forward
 
 if [ -f ~/.zshrc.local ]
 then
