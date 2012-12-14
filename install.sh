@@ -13,3 +13,6 @@ ln -s -f ~/dotfiles/zpreztorc ~/.zpreztorc
 ln -s -f ~/dotfiles/zprofile ~/.zprofile
 ln -s -f ~/dotfiles/zshenv ~/.zshenv
 ln -s -f ~/dotfiles/zshrc ~/.zshrc
+
+ln -s -f ~/dotfiles/vimperator ~/.vimperator
+ln -s -f ~/dotfiles/vimperatorrc ~/.vimperatorrc
