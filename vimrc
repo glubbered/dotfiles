@@ -227,6 +227,8 @@ if $TMUX != ''
   let g:vroom_use_vimux = 1 " use vimux when running tests by vroom
 end
 let g:vroom_use_bundle_exec = 0 " don't use bundler (for faster specs)
+" zeus support
+let g:vroom_spec_command = '`[ -e .zeus.sock ] && echo zeus` rspec '
 
 ""
 "" Vimux
@@ -385,7 +387,7 @@ map <leader>cd :cd %:p:h<cr>:pwd<cr>
 silent! nmap <silent> <Leader>p :NERDTreeToggle<CR>
 
 " Run all specs in tmux
-map <leader>rat :call VimuxRunCommand("zeus rspec spec/ || rspec spec/") <CR>
+map <leader>rat :call VimuxRunCommand("`[ -e .zeus.sock ] && echo zeus` rspec spec/") <CR>
 
 " Gundo toggle
 nnoremap <F5> :GundoToggle<CR>
