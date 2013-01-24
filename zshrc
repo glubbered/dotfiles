@@ -36,13 +36,15 @@ psgrep() {
 
 # Killing tomcat
 killtom() {
-    pid=$(ps aux | grep apache-tomcat | grep 'bin/java' | grep -v grep | awk '{print $2}')
-    if [ -z "$pid" ]
+    pids=( $(ps aux | grep apache-tomcat | grep 'bin/java' | grep -v grep | awk '{print $2}') )
+    if [ -z "$pids" ]
     then
         echo "Tomcat is not running!"
     else
-        echo "Killing Tomcat PID: $pid"
-        kill -9 $pid
+        for pid in "${pids[@]}"; do
+          echo "Killing Tomcat PID: $pid"
+          kill -9 $pid
+        done
     fi
 }
 
