@@ -178,3 +178,6 @@
 	path = vim/bundle/vim-session
 	url = git://github.com/xolox/vim-session.git
   ignore = dirty
+[submodule "vim/bundle/syntactic"]
+	path = vim/bundle/syntactic
+	url = https://github.com/scrooloose/syntastic.git
