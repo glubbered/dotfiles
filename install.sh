@@ -14,5 +14,6 @@ ln -sfn ~/dotfiles/zprofile ~/.zprofile
 ln -sfn ~/dotfiles/zshenv ~/.zshenv
 ln -sfn ~/dotfiles/zshrc ~/.zshrc
 
-ln -sfn ~/dotfiles/vimperator ~/.vimperator
-ln -sfn ~/dotfiles/vimperatorrc ~/.vimperatorrc
+#ln -sfn ~/dotfiles/vimperator ~/.vimperator
+#ln -sfn ~/dotfiles/vimperatorrc ~/.vimperatorrc
+vim +BundleInstall! +qall
