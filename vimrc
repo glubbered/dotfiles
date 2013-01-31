@@ -5,10 +5,60 @@ let mapleader = ","  " leader key
 let g:mapleader=","
 set nocompatible      " Use vim, no vi defaults
 
-" Pathogen
+" Vundle
 filetype off
-call pathogen#runtime_append_all_bundles()
-call pathogen#helptags()
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" let Vundle manage Vundle
+" required!
+Bundle 'gmarik/vundle'
+
+Bundle 'ervandew/supertab'
+Bundle 'scrooloose/nerdtree'
+Bundle 'tpope/vim-rails'
+Bundle 'tpope/vim-fugitive'
+Bundle 'mileszs/ack.vim'
+Bundle 'kien/ctrlp.vim'
+Bundle 'tpope/vim-surround'
+Bundle 'vim-ruby/vim-ruby'
+Bundle 'mattn/zencoding-vim'
+Bundle 'kana/vim-textobj-user'
+Bundle 'edsono/vim-matchit'
+Bundle 'nelstrom/vim-textobj-rubyblock'
+Bundle 'tpope/vim-endwise'
+Bundle 'Lokaltog/vim-easymotion'
+Bundle 'rgarver/Kwbd.vim'
+Bundle 'skalnik/vim-vroom'
+Bundle 'kchmck/vim-coffee-script'
+Bundle 'pangloss/vim-javascript'
+Bundle 'scrooloose/nerdcommenter'
+Bundle 'itspriddle/vim-jquery'
+Bundle 'othree/html5.vim'
+Bundle 'tpope/vim-cucumber'
+Bundle 'tpope/vim-bundler'
+Bundle 'tpope/vim-git'
+Bundle 'tpope/vim-ragtag'
+Bundle 'benmills/vimux'
+Bundle 'sjl/gundo.vim'
+Bundle 'garbas/vim-snipmate'
+Bundle 'tomtom/tlib_vim'
+Bundle 'MarcWeber/vim-addon-mw-utils'
+Bundle 'honza/snipmate-snippets'
+Bundle 'hail2u/vim-css3-syntax'
+Bundle 'tpope/vim-haml'
+Bundle 'godlygeek/csapprox'
+Bundle 'altercation/vim-colors-solarized'
+Bundle 'Lokaltog/vim-powerline'
+Bundle 'vim-scripts/bufexplorer.zip'
+Bundle 'godlygeek/tabular'
+Bundle 'Raimondi/delimitMate'
+Bundle 'peterhoeg/vim-tmux'
+Bundle 'vim-scripts/YankRing.vim'
+Bundle 'vim-scripts/nginx.vim'
+Bundle 'vim-scripts/ZoomWin'
+Bundle 'xolox/vim-session'
+Bundle 'scrooloose/syntastic'
 
 ""
 "" Basic Setup
