@@ -5,13 +5,27 @@
 	autocrlf = false
 	safecrlf = true
 	editor = gvim -f
-    excludesfile = ~/.gitignore
+  excludesfile = ~/.gitignore
 [push]
 	default = current
 [color]
-    branch = auto
-    diff = auto
-    status = auto
+  diff = auto
+  status = auto
+  branch = auto
+  ui = auto
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "status"]
+  added = green
+  changed = red
+  untracked = yellow
+[color "diff"]
+  meta = blue bold reverse
+  frag = magenta bold
+  old = red bold
+  new = green bold
 [alias]
     c = commit -m
     ps = push
