@@ -365,6 +365,7 @@ let g:ctrlp_custom_ignore = {
 let g:ctrlp_switch_buffer = 1
 " default by filename
 let g:ctrlp_by_filename = 1
+let g:ctrlp_extensions = ['tag', 'buffertag']
 
 ""
 "" EasyMotion
