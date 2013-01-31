@@ -1,45 +1,61 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""" BASIC SETTINGS """""""""""""""""""""""""""
+""""""""""""""""""""""" Vundle """"""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let mapleader = ","  " leader key
-let g:mapleader=","
-set nocompatible      " Use vim, no vi defaults
-
-" Vundle
+set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
-" let Vundle manage Vundle
-" required!
+" plugin manager itself
 Bundle 'gmarik/vundle'
 
+" perform all vim insert mode completions with Tab
 Bundle 'ervandew/supertab'
+" file explorer
 Bundle 'scrooloose/nerdtree'
+" ROR tools (navigation, hl)
 Bundle 'tpope/vim-rails'
+" git wrapper
 Bundle 'tpope/vim-fugitive'
+" vim plugin for the Perl module / CLI script 'ack' (search)
 Bundle 'mileszs/ack.vim'
+" full path fuzzy file, buffer, mru, tag, ... finder
 Bundle 'kien/ctrlp.vim'
+" quoting/parenthesizing made simple
 Bundle 'tpope/vim-surround'
+" ruby motions, text objects, syntax, omnicompl
 Bundle 'vim-ruby/vim-ruby'
+" HTML/XML abbreviation editor
 Bundle 'mattn/zencoding-vim'
+" defining custom text objects
 Bundle 'kana/vim-textobj-user'
+" extended % matching
 Bundle 'edsono/vim-matchit'
+" custom text object for selecting ruby blockskk
 Bundle 'nelstrom/vim-textobj-rubyblock'
+" helps to end certain structures automatically
 Bundle 'tpope/vim-endwise'
 Bundle 'Lokaltog/vim-easymotion'
+" add a buffer close to vim that doesn't close the window
 Bundle 'rgarver/Kwbd.vim'
+" running your Ruby tests
 Bundle 'skalnik/vim-vroom'
 Bundle 'kchmck/vim-coffee-script'
 Bundle 'pangloss/vim-javascript'
+" easy commenting in many filetypes
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'itspriddle/vim-jquery'
 Bundle 'othree/html5.vim'
+" syntax highlightling, indenting, and a filetype plugin for Cucumber
 Bundle 'tpope/vim-cucumber'
+" lightweight support for Ruby's Bundler
 Bundle 'tpope/vim-bundler'
+" git files syntax, indent
 Bundle 'tpope/vim-git'
+" maps for editing tags
 Bundle 'tpope/vim-ragtag'
 Bundle 'benmills/vimux'
+" visualizing undo tree to make it usable
 Bundle 'sjl/gundo.vim'
 Bundle 'garbas/vim-snipmate'
 Bundle 'tomtom/tlib_vim'
@@ -49,16 +65,32 @@ Bundle 'hail2u/vim-css3-syntax'
 Bundle 'tpope/vim-haml'
 Bundle 'godlygeek/csapprox'
 Bundle 'altercation/vim-colors-solarized'
+" better-looking, more functional vim statusline
 Bundle 'Lokaltog/vim-powerline'
+" quickly and easily switch between buffers
 Bundle 'vim-scripts/bufexplorer.zip'
+" text filtering and alignment
 Bundle 'godlygeek/tabular'
+" automatic closing of quotes, parenthesis, brackets, etc.
 Bundle 'Raimondi/delimitMate'
+" tmux syntax
 Bundle 'peterhoeg/vim-tmux'
 Bundle 'vim-scripts/YankRing.vim'
+" nginx syntax
 Bundle 'vim-scripts/nginx.vim'
+" zoom into and out of a window
 Bundle 'vim-scripts/ZoomWin'
+" extended session management
 Bundle 'xolox/vim-session'
+" syntax checker
 Bundle 'scrooloose/syntastic'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""" BASIC SETTINGS """""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let mapleader = ","  " leader key
+let g:mapleader=","
+set nocompatible      " Use vim, no vi defaults
 
 ""
 "" Basic Setup
@@ -73,7 +105,7 @@ filetype indent on    " load indent files
 set hidden            " allow buffer switching without saving
 set history=1000      " store commands history
 set autoread          " auto read when a file is change from the outside
-set clipboard=unnamed " yank to the system register (*) by default
+set clipboard=unnamedplus " yank to the system register (+) by default
 set grepprg=ack       " replace the default grep program with ack
 
 
@@ -354,6 +386,11 @@ let g:Powerline_symbols = 'fancy'
 "" delimitMate
 ""
 let delimitMate_expand_cr = 1
+
+""
+"" YankRing
+""
+let g:yankring_replace_n_pkey = ''
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
