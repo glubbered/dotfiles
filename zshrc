@@ -23,7 +23,10 @@ alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
 # URL-encode strings
 alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'
-
+# find duplicates in current dir by md5 hash
+alias finddups="find -type f -exec md5sum '{}' ';' | sort | uniq --all-repeated=separate -w 33 | cut -c 35-"
+# file info: file name, octal permissions, owner
+alias oct="stat -c '%N %a %U'"
 
 psgrep() {
     if [ ! -z $1 ] ; then
@@ -78,7 +81,6 @@ buf () {
 # Top ten memory hogs
 memtop() {ps -eorss,args | sort -nr | pr -TW$COLUMNS | head}
 
-alias finddups="find -type f -exec md5sum '{}' ';' | sort | uniq --all-repeated=separate -w 33 | cut -c 35-"
 # history search
 bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
