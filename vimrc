@@ -6,22 +6,26 @@ filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
-" plugin manager itself
+" Bundler for vim, use :BundleInstall to install these bundles and
+" :BundleUpdate to update all of them
 Bundle 'gmarik/vundle'
 
 " perform all vim insert mode completions with Tab
 Bundle 'ervandew/supertab'
 " file explorer
 Bundle 'scrooloose/nerdtree'
+" runtime files for Haml, Sass, and SCSS
 " ROR tools (navigation, hl)
 Bundle 'tpope/vim-rails'
-" git wrapper
+" Git in vim, use ,gs for git status then - to stage then C to commit
+" check :help Gstatus for more keys
 Bundle 'tpope/vim-fugitive'
 " vim plugin for the Perl module / CLI script 'ack' (search)
 Bundle 'mileszs/ack.vim'
 " full path fuzzy file, buffer, mru, tag, ... finder
 Bundle 'kien/ctrlp.vim'
-" quoting/parenthesizing made simple
+" Surrond stuff with things. ysiw" surrounds a word with quotes
+" cs"' changes " to '
 Bundle 'tpope/vim-surround'
 " ruby motions, text objects, syntax, omnicompl
 Bundle 'vim-ruby/vim-ruby'
@@ -40,10 +44,13 @@ Bundle 'Lokaltog/vim-easymotion'
 Bundle 'rgarver/Kwbd.vim'
 " running your Ruby tests
 Bundle 'skalnik/vim-vroom'
+" coffeescript runtime files
 Bundle 'kchmck/vim-coffee-script'
+" improved javascript indentation
 Bundle 'pangloss/vim-javascript'
 " easy commenting in many filetypes
 Bundle 'scrooloose/nerdcommenter'
+" syntax for jquery keywords and selectors
 Bundle 'itspriddle/vim-jquery'
 Bundle 'othree/html5.vim'
 " syntax highlightling, indenting, and a filetype plugin for Cucumber
@@ -54,6 +61,7 @@ Bundle 'tpope/vim-bundler'
 Bundle 'tpope/vim-git'
 " maps for editing tags
 Bundle 'tpope/vim-ragtag'
+" plugin to interact with tmux
 Bundle 'benmills/vimux'
 " visualizing undo tree to make it usable
 Bundle 'sjl/gundo.vim'
@@ -62,6 +70,7 @@ Bundle 'tomtom/tlib_vim'
 Bundle 'MarcWeber/vim-addon-mw-utils'
 Bundle 'honza/snipmate-snippets'
 Bundle 'hail2u/vim-css3-syntax'
+" runtime files for Haml, Sass, and SCSS
 Bundle 'tpope/vim-haml'
 Bundle 'godlygeek/csapprox'
 Bundle 'altercation/vim-colors-solarized'
@@ -75,6 +84,7 @@ Bundle 'godlygeek/tabular'
 Bundle 'Raimondi/delimitMate'
 " tmux syntax
 Bundle 'peterhoeg/vim-tmux'
+" maintains a history of previous yanks, changes and deletes
 Bundle 'vim-scripts/YankRing.vim'
 " nginx syntax
 Bundle 'vim-scripts/nginx.vim'
@@ -196,17 +206,12 @@ set sidescroll=1     " Number of cols to scroll at a time
 "" Completion
 ""
 set completeopt=menu,preview,longest
-set wildmode=list:longest
-set wildmenu "enable ctrl-n and ctrl-p to scroll thru matches
-set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
-set wildignore+=*sass-cache*
-set wildignore+=*DS_Store*
-set wildignore+=vendor/rails/**
-set wildignore+=vendor/cache/**
-set wildignore+=*.gem
-set wildignore+=log/**
-set wildignore+=tmp/**
-set wildignore+=*.png,*.jpg,*.gif
+set wildmode=longest,list
+set wildmenu
+set wildignore+=*.o,*.obj,.git,*.rbc,*.class,.svn,vendor/gems/*,public/javascripts/compiled
+set wildignore+=*.css,tmp,*.orig,*.jpg,*.png,*.gif,log,solr,.sass-cache,.jhw-cache
+set wildignore+=bundler_stubs,build,error_pages,bundle,build,error_pages
+set wildignore+=.DS_Store
 " ruby
 let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_rails = 1
@@ -393,6 +398,11 @@ let delimitMate_expand_cr = 1
 ""
 let g:yankring_replace_n_pkey = ''
 
+""
+"" syntastic
+""
+let g:syntastic_enable_signs=1
+let g:syntastic_auto_loc_list=1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" KEY MAPPINGS """""""""""""""""""""""""""""
@@ -400,6 +410,10 @@ let g:yankring_replace_n_pkey = ''
 " Use jk as <Esc> alternative
 inoremap jk <Esc>
 inoremap kj <Esc>
+
+" sane regexes
+nnoremap / /\v
+vnoremap / /\v
 
 " use :w!! to write to a file using sudo if you forgot to 'sudo vim file'
 " (it will prompt for sudo password when writing)
@@ -578,7 +592,7 @@ noremap <Leader>tn :tabnext<CR>
 " Easily go to previous tab.
 noremap <Leader>tp :tabprevious<CR>
 
-"" shift key typos fixes
+" shift key typos fixes
 command! -bang -nargs=* -complete=file E e<bang> <args>
 command! -bang -nargs=* -complete=file W w<bang> <args>
 command! -bang -nargs=* -complete=file Wq wq<bang> <args>
@@ -595,3 +609,12 @@ noremap <leader>o :ZoomWin<cr>
 " Quickly switch between two most common white-space set-ups.
 noremap <leader>2 :set ts=2 sts=2 sw=2 expandtab<cr>
 noremap <leader>4 :set ts=4 sts=4 sw=4 expandtab<cr>
+
+" CTags
+map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
+
+" Make the current directory
+nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
+
+" YankRing
+nmap <leader>y :YRShow<cr>
