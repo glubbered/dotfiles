@@ -27,6 +27,10 @@ alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.ar
 alias finddups="find -type f -exec md5sum '{}' ';' | sort | uniq --all-repeated=separate -w 33 | cut -c 35-"
 # file info: file name, octal permissions, owner
 alias oct="stat -c '%N %a %U'"
+# list open ports
+alias openports="netstat -an | grep --color -i -E 'listen|listening'"
+# my ip address
+alias myip="curl ip.appspot.com"
 
 psgrep() {
     if [ ! -z $1 ] ; then
@@ -44,6 +48,7 @@ killtom() {
     then
         echo "Tomcat is not running!"
     else
+        #ps aux | grep <process> | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
         for pid in "${pids[@]}"; do
           echo "Killing Tomcat PID: $pid"
           kill -9 $pid
