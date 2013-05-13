@@ -1,6 +1,6 @@
 [user]
 	name = wedens
-	email = wedens13@yandex.ru
+	email = wedens@eldis.ru
 [core]
 	autocrlf = false
 	safecrlf = true
@@ -35,6 +35,7 @@
     ci = commit
     st = status
     br = branch
+    f = fetch
     rhh = reset --hard HEAD
     hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --oneline --decorate --all --date=short
     type = cat-file -t
