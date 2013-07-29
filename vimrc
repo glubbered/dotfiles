@@ -20,6 +20,9 @@ Bundle 'tpope/vim-rails'
 " Git in vim, use ,gs for git status then - to stage then C to commit
 " check :help Gstatus for more keys
 Bundle 'tpope/vim-fugitive'
+" A Vim plugin which shows a git diff in the 'gutter' (sign column).
+" It shows whether each line has been added, modified, and where lines have been removed.
+Bundle 'airblade/vim-gitgutter'
 " vim plugin for the Perl module / CLI script 'ack' (search)
 Bundle 'mileszs/ack.vim'
 " full path fuzzy file, buffer, mru, tag, ... finder
