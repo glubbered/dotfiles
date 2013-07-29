@@ -78,7 +78,7 @@ Bundle 'godlygeek/csapprox'
 " solarized color scheme
 Bundle 'altercation/vim-colors-solarized'
 " better-looking, more functional vim statusline
-Bundle 'Lokaltog/vim-powerline'
+Bundle 'bling/vim-airline'
 " quickly and easily switch between buffers
 Bundle 'vim-scripts/bufexplorer.zip'
 " text filtering and alignment
@@ -183,8 +183,8 @@ set noswapfile
 ""
 "" Statusline
 ""
-" unless we're using powerline
-if !exists('g:Powerline_loaded') || !g:Powerline_loaded
+" unless we're using airline
+if !exists('g:loaded_airline') || !g:loaded_airline
   set laststatus=2
 
   " Broken down into easily includeable segments
@@ -393,11 +393,6 @@ hi link EasyMotionShade Comment
 let g:solarized_termcolors=256
 
 ""
-"" Powerline
-""
-let g:Powerline_symbols = 'fancy'
-
-""
 "" delimitMate
 ""
 let delimitMate_expand_cr = 1
@@ -414,9 +409,14 @@ let g:yankring_replace_n_pkey = ''
 "let g:syntastic_auto_loc_list=1
 
 ""
-""
+"" Sessions
 ""
 let g:session_autosave = 'no'
+
+""
+"" Airline
+""
+let g:airline_powerline_fonts = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" KEY MAPPINGS """""""""""""""""""""""""""""
