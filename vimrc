@@ -635,3 +635,6 @@ nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
 
 " YankRing
 nmap <leader>y :YRShow<cr>
+
+" create new line after {
+autocmd FileType javascript,css,scss inoremap {<CR> {<CR>}<C-o>O
