@@ -53,8 +53,6 @@ Bundle 'scrooloose/nerdcommenter'
 " syntax for jquery keywords and selectors
 Bundle 'itspriddle/vim-jquery'
 Bundle 'othree/html5.vim'
-" syntax highlightling, indenting, and a filetype plugin for Cucumber
-Bundle 'tpope/vim-cucumber'
 " lightweight support for Ruby's Bundler
 Bundle 'tpope/vim-bundler'
 " git files syntax, indent
@@ -65,14 +63,19 @@ Bundle 'tpope/vim-ragtag'
 Bundle 'benmills/vimux'
 " visualizing undo tree to make it usable
 Bundle 'sjl/gundo.vim'
+" snippets
 Bundle 'garbas/vim-snipmate'
+Bundle 'honza/vim-snippets'
+" snipmate dependency
 Bundle 'tomtom/tlib_vim'
+" snipmate dependency
 Bundle 'MarcWeber/vim-addon-mw-utils'
-Bundle 'honza/snipmate-snippets'
 Bundle 'hail2u/vim-css3-syntax'
 " runtime files for Haml, Sass, and SCSS
 Bundle 'tpope/vim-haml'
+" make gvim-only colorschemes work transparently in terminal vim
 Bundle 'godlygeek/csapprox'
+" solarized color scheme
 Bundle 'altercation/vim-colors-solarized'
 " better-looking, more functional vim statusline
 Bundle 'Lokaltog/vim-powerline'
@@ -92,8 +95,14 @@ Bundle 'vim-scripts/nginx.vim'
 Bundle 'vim-scripts/ZoomWin'
 " extended session management
 Bundle 'xolox/vim-session'
+" dependency for vim-session
+Bundle 'xolox/vim-misc'
 " syntax checker
-Bundle 'scrooloose/syntastic'
+"Bundle 'scrooloose/syntastic'
+" handlebars templates syntax
+Bundle 'nono/vim-handlebars'
+" automatically create directories on write
+Bundle 'DataWraith/auto_mkdir'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" BASIC SETTINGS """""""""""""""""""""""""""
@@ -401,8 +410,13 @@ let g:yankring_replace_n_pkey = ''
 ""
 "" syntastic
 ""
-let g:syntastic_enable_signs=1
-let g:syntastic_auto_loc_list=1
+"let g:syntastic_enable_signs=1
+"let g:syntastic_auto_loc_list=1
+
+""
+""
+""
+let g:session_autosave = 'no'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" KEY MAPPINGS """""""""""""""""""""""""""""
