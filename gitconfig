@@ -42,6 +42,7 @@
     dump = cat-file -p
     ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
     lds = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
+    brdiff = log --left-right --graph --cherry-pick --oneline
     dl = "!git ll -1"
     assume = update-index --assume-unchanged
     unassume = update-index --no-assume-unchanged
