@@ -213,6 +213,7 @@ set foldopen=block,hor,insert,jump,mark,percent,quickfix,search,tag,undo "which 
 set scrolloff=8      " Number of lines from vertical edge to start scrolling
 set sidescrolloff=15 " Number of cols from horizontal edge to start scrolling
 set sidescroll=1     " Number of cols to scroll at a time
+set scrolljump=5     " Lines to scroll when cursor leaves screen
 
 ""
 "" Completion
@@ -235,6 +236,13 @@ if has("autocmd") && exists("+omnifunc")
               \ setlocal omnifunc=syntaxcomplete#Complete |
               \ endif
 endif
+
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
 
 " automatically open and close the popup menu / preview window
 au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
@@ -282,7 +290,7 @@ if has('gui_running')
   set guioptions-=L
 
   set lines=40
-  set guifont=Ubuntu\ Mono\ 14
+  set guifont=Source\ Code\ Pro\ for\ Powerline\ 14
   set shell=/bin/zsh
 endif
 
@@ -492,12 +500,6 @@ nmap T O<ESC>j
 
 " go to last edit location with ,.
 nnoremap ,. '.
-
-" Disable arrow keys
-map <Left> :echo 'damnit!'<cr>
-map <Right> :echo 'you suck!'<cr>
-map <Up> :echo 'this is why you fail'<cr>
-map <Down> :echo 'fuck you!'<cr>
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
