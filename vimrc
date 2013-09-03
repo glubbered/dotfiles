@@ -23,6 +23,8 @@ Bundle 'tpope/vim-fugitive'
 " A Vim plugin which shows a git diff in the 'gutter' (sign column).
 " It shows whether each line has been added, modified, and where lines have been removed.
 Bundle 'airblade/vim-gitgutter'
+" scala syntax
+Bundle 'derekwyatt/vim-scala'
 " vim plugin for the Perl module / CLI script 'ack' (search)
 Bundle 'mileszs/ack.vim'
 " full path fuzzy file, buffer, mru, tag, ... finder
@@ -347,14 +349,14 @@ let VimuxUseNearestPane = 1
 "" SuperTab
 ""
 let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabContextDefaultCompletionType = "<c-x><c-o>"
-let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
-let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
-let g:SuperTabContextDiscoverDiscovery =
-      \ ["&completefunc:<c-x><c-u>", "&omnifunc:<c-x><c-o>"]
-let g:SuperTabRetainCompletionDuration = 'insert'
-let g:SuperTabNoCompleteBefore = []
-let g:SuperTabNoCompleteAfter = ['^', '\s', ',']
+"let g:SuperTabContextDefaultCompletionType = "<c-x><c-o>"
+"let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
+"let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
+"let g:SuperTabContextDiscoverDiscovery =
+      "\ ["&completefunc:<c-x><c-u>", "&omnifunc:<c-x><c-o>"]
+"let g:SuperTabRetainCompletionDuration = 'insert'
+"let g:SuperTabNoCompleteBefore = []
+"let g:SuperTabNoCompleteAfter = ['^', '\s', ',']
 
 ""
 "" NERDTree
@@ -639,4 +641,4 @@ nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
 nmap <leader>y :YRShow<cr>
 
 " create new line after {
-autocmd FileType javascript,css,scss inoremap {<CR> {<CR>}<C-o>O
+autocmd FileType javascript,css,scss,scala,java inoremap {<CR> {<CR>}<C-o>O
