@@ -91,7 +91,7 @@ Bundle 'vim-scripts/bufexplorer.zip'
 " text filtering and alignment
 Bundle 'godlygeek/tabular'
 " automatic closing of quotes, parenthesis, brackets, etc.
-Bundle 'Raimondi/delimitMate'
+Bundle 'jiangmiao/auto-pairs'
 " tmux syntax
 Bundle 'peterhoeg/vim-tmux'
 " maintains a history of previous yanks, changes and deletes
@@ -398,11 +398,6 @@ hi link EasyMotionShade Comment
 let g:solarized_termcolors=256
 
 ""
-"" delimitMate
-""
-let delimitMate_expand_cr = 1
-
-""
 "" YankRing
 ""
 let g:yankring_replace_n_pkey = ''
@@ -631,6 +626,3 @@ nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
 
 " YankRing
 nmap <leader>y :YRShow<cr>
-
-" create new line after {
-autocmd FileType javascript,css,scss,scala,java inoremap {<CR> {<CR>}<C-o>O
