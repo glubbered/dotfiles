@@ -5,6 +5,7 @@ ln -sfn ~/dotfiles/tmux.conf ~/.tmux.conf
 ln -sfn ~/dotfiles/vimrc ~/.vimrc
 ln -sfn ~/dotfiles/vim ~/.vim
 ln -sfn ~/dotfiles/ackrc ~/.ackrc
+ln -sfn ~/dotfiles/ctags ~/.ctags
 
 ln -sfn ~/dotfiles/zprezto ~/.zprezto
 ln -sfn ~/dotfiles/zlogin ~/.zlogin
