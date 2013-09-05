@@ -37,6 +37,7 @@
     st = status
     br = branch
     f = fetch
+    mom = merge origin/master
     rhh = reset --hard HEAD
     hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --oneline --decorate --all --date=short
     type = cat-file -t

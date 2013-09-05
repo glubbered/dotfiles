@@ -14,6 +14,8 @@ Bundle 'gmarik/vundle'
 Bundle 'ervandew/supertab'
 " file explorer
 Bundle 'scrooloose/nerdtree'
+" syntax checking
+Bundle 'scrooloose/syntastic'
 " runtime files for Haml, Sass, and SCSS
 " ROR tools (navigation, hl)
 Bundle 'tpope/vim-rails'
@@ -102,8 +104,6 @@ Bundle 'vim-scripts/ZoomWin'
 Bundle 'xolox/vim-session'
 " dependency for vim-session
 Bundle 'xolox/vim-misc'
-" syntax checker
-"Bundle 'scrooloose/syntastic'
 " handlebars templates syntax
 Bundle 'nono/vim-handlebars'
 " automatically create directories on write
@@ -418,8 +418,8 @@ let g:yankring_replace_n_pkey = ''
 ""
 "" syntastic
 ""
-"let g:syntastic_enable_signs=1
-"let g:syntastic_auto_loc_list=1
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
 
 ""
 "" Sessions
