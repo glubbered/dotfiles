@@ -82,8 +82,6 @@ Bundle 'hail2u/vim-css3-syntax'
 Bundle 'tpope/vim-haml'
 " make gvim-only colorschemes work transparently in terminal vim
 Bundle 'godlygeek/csapprox'
-" solarized color scheme
-Bundle 'altercation/vim-colors-solarized'
 " better-looking, more functional vim statusline
 Bundle 'bling/vim-airline'
 " quickly and easily switch between buffers
@@ -108,7 +106,10 @@ Bundle 'xolox/vim-misc'
 Bundle 'nono/vim-handlebars'
 " automatically create directories on write
 Bundle 'DataWraith/auto_mkdir'
-
+" color schemes
+Bundle 'rking/vim-detailed'
+Bundle 'altercation/vim-colors-solarized'
+Bundle 'nanotech/jellybeans.vim'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" BASIC SETTINGS """""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -147,6 +148,7 @@ set t_Co=256          " enable 256-color mode.
 set background=dark   " assume a dark background
 colorscheme jellybeans
 set cursorline        " highlight current line
+set shortmess+=I      " don't display welcome
 syntax enable         " Turn on syntax highlighting allowing local overrides
 " Use nicer representations when showing invisible characters.
 set listchars=""
@@ -177,6 +179,7 @@ set hlsearch    " highlight matches
 set incsearch   " incremental searching
 set ignorecase  " searches are case insensitive...
 set smartcase   " ... unless they contain at least one capital letter
+set tags=tags;/
 
 ""
 "" Backup and swap files
