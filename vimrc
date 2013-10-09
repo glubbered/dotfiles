@@ -157,9 +157,6 @@ set ruler             " Show line and column number
 set showmatch         " show matching brackets when cursor is over them
 set matchpairs+=<:>   " specially for html
 set mat=2             " How many tenths of a second to blink when matching brackets
-set t_Co=256          " enable 256-color mode.
-set background=dark   " assume a dark background
-colorscheme jellybeans
 set cursorline        " highlight current line
 set shortmess+=I      " don't display welcome
 syntax enable         " Turn on syntax highlighting allowing local overrides
@@ -642,3 +639,9 @@ nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
 
 " YankRing
 nmap <leader>y :YRShow<cr>
+
+
+
+set t_Co=256          " enable 256-color mode.
+set background=dark   " assume a dark background
+colorscheme detailed
