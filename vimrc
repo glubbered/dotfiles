@@ -16,17 +16,16 @@ Bundle 'ervandew/supertab'
 Bundle 'scrooloose/nerdtree'
 " syntax checking
 Bundle 'scrooloose/syntastic'
-" runtime files for Haml, Sass, and SCSS
-" ROR tools (navigation, hl)
-Bundle 'tpope/vim-rails'
+
 " Git in vim, use ,gs for git status then - to stage then C to commit
 " check :help Gstatus for more keys
 Bundle 'tpope/vim-fugitive'
+" git files syntax, indent
+Bundle 'tpope/vim-git'
 " A Vim plugin which shows a git diff in the 'gutter' (sign column).
 " It shows whether each line has been added, modified, and where lines have been removed.
 Bundle 'airblade/vim-gitgutter'
-" scala syntax
-Bundle 'derekwyatt/vim-scala'
+
 " vim plugin for the Perl module / CLI script 'ack' (search)
 Bundle 'mileszs/ack.vim'
 " full path fuzzy file, buffer, mru, tag, ... finder
@@ -34,42 +33,61 @@ Bundle 'kien/ctrlp.vim'
 " Surrond stuff with things. ysiw" surrounds a word with quotes
 " cs"' changes " to '
 Bundle 'tpope/vim-surround'
-" ruby motions, text objects, syntax, omnicompl
-Bundle 'vim-ruby/vim-ruby'
-" HTML/XML abbreviation editor
-Bundle 'mattn/zencoding-vim'
 " defining custom text objects
 Bundle 'kana/vim-textobj-user'
 " extended % matching
 Bundle 'edsono/vim-matchit'
-" custom text object for selecting ruby blockskk
-Bundle 'nelstrom/vim-textobj-rubyblock'
 " helps to end certain structures automatically
 Bundle 'tpope/vim-endwise'
 Bundle 'Lokaltog/vim-easymotion'
 " add a buffer close to vim that doesn't close the window
 Bundle 'rgarver/Kwbd.vim'
-" running your Ruby tests
-Bundle 'skalnik/vim-vroom'
-" coffeescript runtime files
-Bundle 'kchmck/vim-coffee-script'
+
+" scala syntax
+Bundle 'derekwyatt/vim-scala'
+
 " improved javascript indentation
 Bundle 'pangloss/vim-javascript'
 " improved js syntax
 Bundle 'jelera/vim-javascript-syntax'
-" easy commenting in many filetypes
-Bundle 'scrooloose/nerdcommenter'
 " syntax for jquery keywords and selectors
 Bundle 'itspriddle/vim-jquery'
-Bundle 'othree/html5.vim'
+" coffeescript runtime files
+Bundle 'kchmck/vim-coffee-script'
+" handlebars templates syntax
+Bundle 'nono/vim-handlebars'
+
+" runtime files for Haml, Sass, and SCSS
+" ROR tools (navigation, hl)
+Bundle 'tpope/vim-rails'
 " lightweight support for Ruby's Bundler
 Bundle 'tpope/vim-bundler'
-" git files syntax, indent
-Bundle 'tpope/vim-git'
+" custom text object for selecting ruby blockskk
+Bundle 'nelstrom/vim-textobj-rubyblock'
+" ruby motions, text objects, syntax, omnicompl
+Bundle 'vim-ruby/vim-ruby'
+" running your Ruby tests
+Bundle 'skalnik/vim-vroom'
+
+
+Bundle 'othree/html5.vim'
 " maps for editing tags
 Bundle 'tpope/vim-ragtag'
+" HTML/XML abbreviation editor
+Bundle 'mattn/zencoding-vim'
+Bundle 'hail2u/vim-css3-syntax'
+" runtime files for Haml, Sass, and SCSS
+Bundle 'tpope/vim-haml'
+
+" nginx syntax
+Bundle 'vim-scripts/nginx.vim'
+
+" easy commenting in many filetypes
+Bundle 'scrooloose/nerdcommenter'
 " plugin to interact with tmux
 Bundle 'benmills/vimux'
+Bundle 'peterhoeg/vim-tmux'
+" maintains a history of previous yanks, changes and deletes
 " visualizing undo tree to make it usable
 Bundle 'sjl/gundo.vim'
 " snippets
@@ -79,9 +97,6 @@ Bundle 'honza/vim-snippets'
 Bundle 'tomtom/tlib_vim'
 " snipmate dependency
 Bundle 'MarcWeber/vim-addon-mw-utils'
-Bundle 'hail2u/vim-css3-syntax'
-" runtime files for Haml, Sass, and SCSS
-Bundle 'tpope/vim-haml'
 " make gvim-only colorschemes work transparently in terminal vim
 Bundle 'godlygeek/csapprox'
 " better-looking, more functional vim statusline
@@ -93,21 +108,16 @@ Bundle 'godlygeek/tabular'
 " automatic closing of quotes, parenthesis, brackets, etc.
 Bundle 'jiangmiao/auto-pairs'
 " tmux syntax
-Bundle 'peterhoeg/vim-tmux'
-" maintains a history of previous yanks, changes and deletes
 Bundle 'vim-scripts/YankRing.vim'
-" nginx syntax
-Bundle 'vim-scripts/nginx.vim'
 " zoom into and out of a window
 Bundle 'vim-scripts/ZoomWin'
 " extended session management
 Bundle 'xolox/vim-session'
 " dependency for vim-session
 Bundle 'xolox/vim-misc'
-" handlebars templates syntax
-Bundle 'nono/vim-handlebars'
 " automatically create directories on write
 Bundle 'DataWraith/auto_mkdir'
+
 " color schemes
 Bundle 'rking/vim-detailed'
 Bundle 'altercation/vim-colors-solarized'
