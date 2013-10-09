@@ -110,6 +110,7 @@ Bundle 'DataWraith/auto_mkdir'
 Bundle 'rking/vim-detailed'
 Bundle 'altercation/vim-colors-solarized'
 Bundle 'nanotech/jellybeans.vim'
+Bundle 'morhetz/gruvbox'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" BASIC SETTINGS """""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
