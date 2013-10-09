@@ -55,6 +55,8 @@ Bundle 'skalnik/vim-vroom'
 Bundle 'kchmck/vim-coffee-script'
 " improved javascript indentation
 Bundle 'pangloss/vim-javascript'
+" improved js syntax
+Bundle 'jelera/vim-javascript-syntax'
 " easy commenting in many filetypes
 Bundle 'scrooloose/nerdcommenter'
 " syntax for jquery keywords and selectors
