@@ -10,12 +10,13 @@ call vundle#rc()
 " :BundleUpdate to update all of them
 Bundle 'gmarik/vundle'
 
-" perform all vim insert mode completions with Tab
-Bundle 'ervandew/supertab'
 " file explorer
 Bundle 'scrooloose/nerdtree'
 " syntax checking
 Bundle 'scrooloose/syntastic'
+" as-you-type, fuzzy-search code completion engine (requires native modules
+" compilation)
+Bundle 'Valloric/YouCompleteMe'
 
 " Git in vim, use ,gs for git status then - to stage then C to commit
 " check :help Gstatus for more keys
@@ -39,23 +40,27 @@ Bundle 'kana/vim-textobj-user'
 Bundle 'edsono/vim-matchit'
 " helps to end certain structures automatically
 Bundle 'tpope/vim-endwise'
+" quick jumping over text
 Bundle 'Lokaltog/vim-easymotion'
+"Bundle 'justinmk/vim-sneak'
 " add a buffer close to vim that doesn't close the window
 Bundle 'rgarver/Kwbd.vim'
 
 " scala syntax
 Bundle 'derekwyatt/vim-scala'
 
-" improved javascript indentation
-Bundle 'pangloss/vim-javascript'
 " improved js syntax
 Bundle 'jelera/vim-javascript-syntax'
+" improved javascript indentation
+Bundle 'pangloss/vim-javascript'
 " syntax for jquery keywords and selectors
 Bundle 'itspriddle/vim-jquery'
 " coffeescript runtime files
 Bundle 'kchmck/vim-coffee-script'
 " handlebars templates syntax
 Bundle 'nono/vim-handlebars'
+" JS omnicompletion, navigation
+Bundle 'marijnh/tern_for_vim'
 
 " runtime files for Haml, Sass, and SCSS
 " ROR tools (navigation, hl)
@@ -86,12 +91,14 @@ Bundle 'vim-scripts/nginx.vim'
 Bundle 'scrooloose/nerdcommenter'
 " plugin to interact with tmux
 Bundle 'benmills/vimux'
+" tmux config syntax
 Bundle 'peterhoeg/vim-tmux'
 " maintains a history of previous yanks, changes and deletes
 " visualizing undo tree to make it usable
 Bundle 'sjl/gundo.vim'
 " snippets
 Bundle 'garbas/vim-snipmate'
+" snippets for snipmate
 Bundle 'honza/vim-snippets'
 " snipmate dependency
 Bundle 'tomtom/tlib_vim'
@@ -171,7 +178,7 @@ let html_no_rendering=1
 ""
 "" Whitespace and indentation
 ""
-set nowrap                        " don't wrap lines
+"set nowrap                        " don't wrap lines
 set tabstop=2                     " a tab is two spaces
 set shiftwidth=2                  " an autoindent (with <<) is two spaces
 set softtabstop=2
@@ -233,9 +240,9 @@ set scrolljump=5     " Lines to scroll when cursor leaves screen
 ""
 "" Completion
 ""
-set completeopt=menu,preview,longest
-set wildmode=longest,list
-set wildmenu
+"set completeopt=menu,preview,longest
+"set wildmode=longest,list
+"set wildmenu
 set wildignore+=*.o,*.obj,.git,*.rbc,*.class,.svn,vendor/gems/*,public/javascripts/compiled
 set wildignore+=*.css,tmp,*.orig,*.jpg,*.png,*.gif,log,solr,.sass-cache,.jhw-cache
 set wildignore+=bundler_stubs,build,error_pages,bundle,build,error_pages
@@ -245,22 +252,22 @@ let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_rails = 1
 
 " use syntax complete if nothing else available
-if has("autocmd") && exists("+omnifunc")
-  autocmd Filetype *
-              \ if &omnifunc == "" |
-              \ setlocal omnifunc=syntaxcomplete#Complete |
-              \ endif
-endif
+"if has("autocmd") && exists("+omnifunc")
+  "autocmd Filetype *
+              "\ if &omnifunc == "" |
+              "\ setlocal omnifunc=syntaxcomplete#Complete |
+              "\ endif
+"endif
 
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+"autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+"autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+"autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+"autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+"autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+"autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
 
 " automatically open and close the popup menu / preview window
-au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
+"au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
 
 ""
 "" Editor
@@ -268,6 +275,7 @@ au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
 set formatoptions-=o 	  "dont continue comments when pushing o/O
 set virtualedit=onemore " allow for cursor beyond last character
 set viewoptions=folds,options,cursor,unix,slash " better unix / windows compatibility
+
 " Strip trailing whitespace
 function! <SID>StripTrailingWhitespaces()
     " Preparation: save last search, and cursor position.
@@ -280,6 +288,8 @@ function! <SID>StripTrailingWhitespaces()
     let @/=_s
     call cursor(l, c)
 endfunction
+
+" Strip whitespace on write
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 
 " When editing a file, always jump to the last known cursor position.
@@ -312,6 +322,7 @@ endif
 
 " treat scss files also as css
 autocmd BufNewFile,BufRead *.scss             set ft=scss.css
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" PLUGINS SETTINGS """""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -340,6 +351,7 @@ let g:user_zen_settings = {
 ""
 let g:snipMate = {}
 let g:snipMate.scope_aliases = {}
+" use snippets from javascript-jquery in javascript
 let g:snipMate.scope_aliases['javascript'] = 'javascript,javascript-jquery'
 
 ""
@@ -357,11 +369,6 @@ let g:vroom_spec_command = '`[ -e .zeus.sock ] && echo zeus` rspec '
 ""
 " Use exising pane (not used by vim) if found instead of running split-window.
 let VimuxUseNearestPane = 1
-
-""
-"" SuperTab
-""
-let g:SuperTabDefaultCompletionType = "context"
 
 ""
 "" NERDTree
@@ -389,6 +396,7 @@ let g:NERDShutUp=1
 ""
 "" ctrlP
 ""
+" project root search policy
 let g:ctrlp_working_path_mode = 'ra' " r - try to find root, a - current dir
 let g:ctrlp_custom_ignore = {
             \ 'dir': '\.git$\|\.hg$\|\.svn$',
@@ -402,6 +410,7 @@ let g:ctrlp_extensions = ['tag', 'buffertag']
 ""
 "" EasyMotion
 ""
+" highlight colors
 hi link EasyMotionTarget ErrorMsg
 hi link EasyMotionShade Comment
 
@@ -430,6 +439,18 @@ let g:session_autosave = 'no'
 "" Airline
 ""
 let g:airline_powerline_fonts = 1
+
+""
+"" YouCompleteMe
+""
+let g:ycm_add_preview_to_completeopt=0
+let g:ycm_confirm_extra_conf=0
+set completeopt-=preview
+
+""
+"" Eclim
+""
+let g:EclimCompletionMethod = 'omnifunc'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" KEY MAPPINGS """""""""""""""""""""""""""""
@@ -472,12 +493,12 @@ map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
+" next window
+map <Tab> <C-w>w
 
 " buffer cycling
 map <F2> :bprevious<CR>
 map <F3> :bnext<CR>
-" switch between splits
-map <Tab> <C-w>w
 
 " splits
 map <C-w>\| <C-W>v<C-W><Right>
@@ -508,6 +529,7 @@ map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " NERDTree toggle
 silent! nmap <silent> <Leader>p :NERDTreeToggle<CR>
+silent! nmap <silent> <leader>f :NERDTreeFind<CR>
 
 " Run all specs in tmux
 map <leader>rat :call VimuxRunCommand("`[ -e .zeus.sock ] && echo zeus` rspec spec/") <CR>
@@ -521,15 +543,6 @@ let g:user_zen_leader_key = '<C-e>'
 " bufexplorer
 silent! map <leader>b :BufExplorer<cr>
 
-
-"When typing a string, your quotes auto complete. Move past the quote
-"while still in insert mode by hitting Ctrl-a. Example:
-"
-" type 'foo<c-a>
-"
-" the first quote will autoclose so you'll get 'foo' and hitting <c-a> will
-" put the cursor right after the quote
-imap <C-a> <esc>wa
 
 " Get the current highlight group. Useful for then remapping the color
 map ,hi :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">" . " FG:" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"fg#")<CR>
@@ -599,6 +612,8 @@ vmap ,{ c{<C-R>"}<ESC>
 nmap <leader>gs :Gstatus<CR>
 nmap <leader>gc :Gcommit<CR>
 nmap <leader>gp :Git push<CR>
+
+" new line in insert mode
 imap <C-o> <esc>o
 
 "" Tab navigation
@@ -640,8 +655,15 @@ nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
 " YankRing
 nmap <leader>y :YRShow<cr>
 
+" Eclim
+nmap <leader>ji :JavaImport<CR>
+nmap <leader>js :JavaSearchContext<CR>
+nmap <leader>jg :JavaSearch<CR>
 
 
 set t_Co=256          " enable 256-color mode.
 set background=dark   " assume a dark background
-colorscheme detailed
+colorscheme jellybeans
+if has('gui_running')
+  colorscheme gruvbox
+endif
