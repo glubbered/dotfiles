@@ -39,11 +39,14 @@
     f = fetch
     mom = merge origin/master
     rhh = reset --hard HEAD
+
     hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
     ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
     lds = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
-    brdiff = log --left-right --graph --cherry-pick --oneline
     dl = "!git ll -1"
+    in = "!git fetch && git hist @{u}.."
+    brdiff = log --left-right --graph --cherry-pick --oneline
+
     assume = update-index --assume-unchanged
     unassume = update-index --no-assume-unchanged
     assumed = "!git ls-files -v | grep ^h | cut -c 3-"
