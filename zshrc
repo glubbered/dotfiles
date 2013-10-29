@@ -31,7 +31,21 @@ alias oct="stat -c '%N %a %U'"
 alias openports="netstat -an | grep --color -i -E 'listen|listening'"
 # my ip address
 alias myip="curl ip.appspot.com"
+# Intuitive map function
+# For example, to list all directories that contain a certain file:
+# find . -name .gitattributes | map dirname
+alias map="xargs -n1"
 
+# Start an HTTP server from a directory, optionally specifying the port
+function server() {
+  local port="${1:-8000}"
+  sleep 1 && xdg-open "http://localhost:${port}/" &
+  # Set the default Content-Type to `text/plain` instead of `application/octet-stream`
+  # And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
+  python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port"
+}
+
+# find process by substring
 psgrep() {
     if [ ! -z $1 ] ; then
         echo "Grepping for processes matching $1..."
@@ -56,6 +70,12 @@ killtom() {
     fi
 }
 
+# Find files and exec commands at them.
+# $ find-exec .coffee cat | wc -l
+# # => 9762
+function find-exec() {
+  find . -type f -iname "*${1:-}*" -exec "${2:-file}" '{}' \;
+}
 
 # create a new script, automatically populating the shebang line, editing the
 # script, and making it executable.
@@ -81,6 +101,20 @@ buf () {
         newname=`echo $oldname | sed s/$firstpart/$firstpart.$datepart/`;
         cp -R ${oldname} ${newname};
     fi
+}
+
+# Determine size of a file or total size of a directory
+function fs() {
+  if du -b /dev/null > /dev/null 2>&1; then
+    local arg=-sbh
+  else
+    local arg=-sh
+  fi
+  if [[ -n "$@" ]]; then
+    du $arg -- "$@"
+  else
+    du $arg .[^.]* *
+  fi
 }
 
 # Top ten memory hogs
