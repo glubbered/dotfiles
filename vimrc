@@ -315,7 +315,8 @@ if has('gui_running')
   set guioptions-=L
 
   set lines=40
-  set guifont=Source\ Code\ Pro\ for\ Powerline\ 14
+  "set guifont=Source\ Code\ Pro\ for\ Powerline\ 14
+  set guifont=PT\ Mono\ for\ Powerline\ 13
   set shell=/bin/zsh
 endif
 
