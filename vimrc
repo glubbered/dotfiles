@@ -265,6 +265,8 @@ let g:rubycomplete_rails = 1
 "autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 "autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 "autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+"
+autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
 
 " automatically open and close the popup menu / preview window
 "au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif

@@ -11,7 +11,7 @@ COMMAND="git merge"
 
 test "$(basename $0)" = "git-reup" && COMMAND="git rebase"
 
-git fetch &> /dev/null
+git fetch && git fetch --tags &> /dev/null
 changes=`git hist ..origin/master`
 
 eval "$COMMAND origin/master"
