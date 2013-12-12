@@ -57,22 +57,19 @@ Bundle 'pangloss/vim-javascript'
 Bundle 'itspriddle/vim-jquery'
 " coffeescript runtime files
 Bundle 'kchmck/vim-coffee-script'
-" handlebars templates syntax
-Bundle 'nono/vim-handlebars'
-" JS omnicompletion, navigation
-Bundle 'marijnh/tern_for_vim'
+" handlebars  and mustache templates syntax
+"Bundle 'mustache/vim-mustache-handlebars'
 
-" runtime files for Haml, Sass, and SCSS
 " ROR tools (navigation, hl)
-Bundle 'tpope/vim-rails'
+"Bundle 'tpope/vim-rails'
 " lightweight support for Ruby's Bundler
-Bundle 'tpope/vim-bundler'
+"Bundle 'tpope/vim-bundler'
 " custom text object for selecting ruby blockskk
-Bundle 'nelstrom/vim-textobj-rubyblock'
+"Bundle 'nelstrom/vim-textobj-rubyblock'
 " ruby motions, text objects, syntax, omnicompl
-Bundle 'vim-ruby/vim-ruby'
+"Bundle 'vim-ruby/vim-ruby'
 " running your Ruby tests
-Bundle 'skalnik/vim-vroom'
+"Bundle 'skalnik/vim-vroom'
 
 
 Bundle 'othree/html5.vim'
@@ -85,17 +82,17 @@ Bundle 'hail2u/vim-css3-syntax'
 Bundle 'tpope/vim-haml'
 
 " nginx syntax
-Bundle 'vim-scripts/nginx.vim'
+"Bundle 'vim-scripts/nginx.vim'
 
 " easy commenting in many filetypes
 Bundle 'scrooloose/nerdcommenter'
 " plugin to interact with tmux
-Bundle 'benmills/vimux'
+"Bundle 'benmills/vimux'
 " tmux config syntax
 Bundle 'peterhoeg/vim-tmux'
 " maintains a history of previous yanks, changes and deletes
 " visualizing undo tree to make it usable
-Bundle 'sjl/gundo.vim'
+"Bundle 'sjl/gundo.vim'
 " snippets
 Bundle 'garbas/vim-snipmate'
 " snippets for snipmate
@@ -117,11 +114,11 @@ Bundle 'jiangmiao/auto-pairs'
 " tmux syntax
 Bundle 'vim-scripts/YankRing.vim'
 " zoom into and out of a window
-Bundle 'vim-scripts/ZoomWin'
+"Bundle 'vim-scripts/ZoomWin'
 " extended session management
-Bundle 'xolox/vim-session'
+"Bundle 'xolox/vim-session'
 " dependency for vim-session
-Bundle 'xolox/vim-misc'
+"Bundle 'xolox/vim-misc'
 " automatically create directories on write
 Bundle 'DataWraith/auto_mkdir'
 
