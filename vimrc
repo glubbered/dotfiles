@@ -429,6 +429,8 @@ let g:yankring_replace_n_pkey = ''
 ""
 let g:syntastic_error_symbol='✗'
 let g:syntastic_warning_symbol='⚠'
+" user faster fsc compiler by default
+let g:syntastic_scala_checkers=['fsc']
 
 ""
 "" Sessions
