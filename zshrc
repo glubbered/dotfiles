@@ -120,6 +120,13 @@ function fs() {
 # Top ten memory hogs
 memtop() {ps -eorss,args | sort -nr | pr -TW$COLUMNS | head}
 
+# List of installed packages excluding default
+function installed_packages() {
+  sudo aptitude search '~i !~M' -F '%p' | sed 's/[ \t]*$//' | sort -u > /tmp/currentlyinstalled.txt
+  wget -qO - http://mirror.pnl.gov/releases/raring/ubuntu-13.04-desktop-amd64.manifest | cut -f1 | sed 's/[ \t]*$//' | sort -u > /tmp/defaultinstalled.txt
+  comm -23 /tmp/currentlyinstalled.txt /tmp/defaultinstalled.txt
+}
+
 # history search
 bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
