@@ -48,6 +48,8 @@ Bundle 'rgarver/Kwbd.vim'
 
 " scala syntax
 Bundle 'derekwyatt/vim-scala'
+" sbt syntax
+Bundle 'derekwyatt/vim-sbt'
 
 " improved js syntax
 Bundle 'jelera/vim-javascript-syntax'
@@ -83,6 +85,7 @@ Bundle 'tpope/vim-haml'
 
 " nginx syntax
 "Bundle 'vim-scripts/nginx.vim'
+Bundle 'gre/play2vim'
 
 " easy commenting in many filetypes
 Bundle 'scrooloose/nerdcommenter'
