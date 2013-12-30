@@ -11,9 +11,11 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
 
 " file explorer
-Bundle 'scrooloose/nerdtree'
+"Bundle 'scrooloose/nerdtree'
+" some sugar for netrw
+Bundle 'tpope/vim-vinegar'
 " syntax checking
-Bundle 'scrooloose/syntastic'
+"Bundle 'scrooloose/syntastic'
 " as-you-type, fuzzy-search code completion engine (requires native modules
 " compilation)
 Bundle 'Valloric/YouCompleteMe'
@@ -44,7 +46,7 @@ Bundle 'tpope/vim-endwise'
 Bundle 'Lokaltog/vim-easymotion'
 "Bundle 'justinmk/vim-sneak'
 " add a buffer close to vim that doesn't close the window
-Bundle 'rgarver/Kwbd.vim'
+" Bundle 'rgarver/Kwbd.vim'
 
 " scala syntax
 Bundle 'derekwyatt/vim-scala'
@@ -87,8 +89,10 @@ Bundle 'tpope/vim-haml'
 "Bundle 'vim-scripts/nginx.vim'
 Bundle 'gre/play2vim'
 
+" Comment stuff out
+Bundle 'tpope/vim-commentary'
 " easy commenting in many filetypes
-Bundle 'scrooloose/nerdcommenter'
+"Bundle 'scrooloose/nerdcommenter'
 " plugin to interact with tmux
 "Bundle 'benmills/vimux'
 " tmux config syntax
@@ -97,9 +101,9 @@ Bundle 'peterhoeg/vim-tmux'
 " visualizing undo tree to make it usable
 "Bundle 'sjl/gundo.vim'
 " snippets
-Bundle 'garbas/vim-snipmate'
+"Bundle 'garbas/vim-snipmate'
 " snippets for snipmate
-Bundle 'honza/vim-snippets'
+"Bundle 'honza/vim-snippets'
 " snipmate dependency
 Bundle 'tomtom/tlib_vim'
 " snipmate dependency
@@ -109,9 +113,9 @@ Bundle 'godlygeek/csapprox'
 " better-looking, more functional vim statusline
 Bundle 'bling/vim-airline'
 " quickly and easily switch between buffers
-Bundle 'vim-scripts/bufexplorer.zip'
+"Bundle 'vim-scripts/bufexplorer.zip'
 " text filtering and alignment
-Bundle 'godlygeek/tabular'
+" Bundle 'godlygeek/tabular'
 " automatic closing of quotes, parenthesis, brackets, etc.
 Bundle 'jiangmiao/auto-pairs'
 " tmux syntax
@@ -123,11 +127,11 @@ Bundle 'vim-scripts/YankRing.vim'
 " dependency for vim-session
 "Bundle 'xolox/vim-misc'
 " automatically create directories on write
-Bundle 'DataWraith/auto_mkdir'
+" Bundle 'DataWraith/auto_mkdir'
 
 " color schemes
-Bundle 'rking/vim-detailed'
-Bundle 'altercation/vim-colors-solarized'
+" Bundle 'rking/vim-detailed'
+" Bundle 'altercation/vim-colors-solarized'
 Bundle 'nanotech/jellybeans.vim'
 Bundle 'morhetz/gruvbox'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -240,36 +244,15 @@ set scrolljump=5     " Lines to scroll when cursor leaves screen
 ""
 "" Completion
 ""
-"set completeopt=menu,preview,longest
-"set wildmode=longest,list
-"set wildmenu
 set wildignore+=*.o,*.obj,.git,*.rbc,*.class,.svn,vendor/gems/*,public/javascripts/compiled
 set wildignore+=*.css,tmp,*.orig,*.jpg,*.png,*.gif,log,solr,.sass-cache,.jhw-cache
 set wildignore+=bundler_stubs,build,error_pages,bundle,build,error_pages
 set wildignore+=.DS_Store
 " ruby
-let g:rubycomplete_buffer_loading = 1
-let g:rubycomplete_rails = 1
+" let g:rubycomplete_buffer_loading = 1
+" let g:rubycomplete_rails = 1
 
-" use syntax complete if nothing else available
-"if has("autocmd") && exists("+omnifunc")
-  "autocmd Filetype *
-              "\ if &omnifunc == "" |
-              "\ setlocal omnifunc=syntaxcomplete#Complete |
-              "\ endif
-"endif
-
-"autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-"autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-"autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-"autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-"autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-"autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-"
 autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
-
-" automatically open and close the popup menu / preview window
-"au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
 
 ""
 "" Editor
@@ -326,6 +309,12 @@ endif
 " treat scss files also as css
 autocmd BufNewFile,BufRead *.scss             set ft=scss.css
 
+"""
+""" Netrw
+"""
+" netrw preview in vertical split
+let g:netrw_preview = 1
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" PLUGINS SETTINGS """""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -352,49 +341,49 @@ let g:user_zen_settings = {
 ""
 "" snipMate
 ""
-let g:snipMate = {}
-let g:snipMate.scope_aliases = {}
-" use snippets from javascript-jquery in javascript
-let g:snipMate.scope_aliases['javascript'] = 'javascript,javascript-jquery'
+"let g:snipMate = {}
+"let g:snipMate.scope_aliases = {}
+"" use snippets from javascript-jquery in javascript
+"let g:snipMate.scope_aliases['javascript'] = 'javascript,javascript-jquery'
 
 ""
 "" Vroom
 ""
-if $TMUX != ''
-  let g:vroom_use_vimux = 1 " use vimux when running tests by vroom
-end
-let g:vroom_use_bundle_exec = 0 " don't use bundler (for faster specs)
-" zeus support
-let g:vroom_spec_command = '`[ -e .zeus.sock ] && echo zeus` rspec '
+"if $TMUX != ''
+  "let g:vroom_use_vimux = 1 " use vimux when running tests by vroom
+"end
+"let g:vroom_use_bundle_exec = 0 " don't use bundler (for faster specs)
+"" zeus support
+"let g:vroom_spec_command = '`[ -e .zeus.sock ] && echo zeus` rspec '
 
 ""
 "" Vimux
 ""
 " Use exising pane (not used by vim) if found instead of running split-window.
-let VimuxUseNearestPane = 1
+"let VimuxUseNearestPane = 1
 
 ""
 "" NERDTree
 ""
-" Show the bookmarks table on startup
-let NERDTreeShowBookmarks=1
-" exclude
-let NERDTreeIgnore=['\.pyc', '\~$', '\.swo$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
-let NERDTreeChDirMode=0
-" quit NERDTree after openning a file
-let NERDTreeQuitOnOpen=1
-" Use a single click to fold/unfold directories and a double click to open files
-let NERDTreeMouseMode=2
-" show hidden files and directories
-let NERDTreeShowHidden=1
-let NERDTreeKeepTreeInNewTab=1
-let g:nerdtree_tabs_open_on_gui_startup=0
-let NERDTreeMinimalUI = 1
-let NERDTreeDirArrows = 1
-let g:NERDTreeWinSize = 30
-" Highlight the selected entry in the tree
-let NERDTreeHighlightCursorline = 1
-let g:NERDShutUp=1
+"" Show the bookmarks table on startup
+"let NERDTreeShowBookmarks=1
+"" exclude
+"let NERDTreeIgnore=['\.pyc', '\~$', '\.swo$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
+"let NERDTreeChDirMode=0
+"" quit NERDTree after openning a file
+"let NERDTreeQuitOnOpen=1
+"" Use a single click to fold/unfold directories and a double click to open files
+"let NERDTreeMouseMode=2
+"" show hidden files and directories
+"let NERDTreeShowHidden=1
+"let NERDTreeKeepTreeInNewTab=1
+"let g:nerdtree_tabs_open_on_gui_startup=0
+"let NERDTreeMinimalUI = 1
+"let NERDTreeDirArrows = 1
+"let g:NERDTreeWinSize = 30
+"" Highlight the selected entry in the tree
+"let NERDTreeHighlightCursorline = 1
+"let g:NERDShutUp=1
 
 ""
 "" ctrlP
@@ -430,15 +419,15 @@ let g:yankring_replace_n_pkey = ''
 ""
 "" syntastic
 ""
-let g:syntastic_error_symbol='✗'
-let g:syntastic_warning_symbol='⚠'
-" user faster fsc compiler by default
-let g:syntastic_scala_checkers=['fsc']
+"let g:syntastic_error_symbol='✗'
+"let g:syntastic_warning_symbol='⚠'
+"" user faster fsc compiler by default
+"let g:syntastic_scala_checkers=['fsc']
 
 ""
 "" Sessions
 ""
-let g:session_autosave = 'no'
+" let g:session_autosave = 'no'
 
 ""
 "" Airline
@@ -455,7 +444,7 @@ set completeopt-=preview
 ""
 "" Eclim
 ""
-let g:EclimCompletionMethod = 'omnifunc'
+"let g:EclimCompletionMethod = 'omnifunc'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" KEY MAPPINGS """""""""""""""""""""""""""""
@@ -510,13 +499,19 @@ map <C-w>\| <C-W>v<C-W><Right>
 map <C-w>- :split<cr>
 
 " close buffer without closing window
-nmap <C-w><Del> <Plug>Kwbd
+" nmap <C-w><Del> <Plug>Kwbd
 
 " key mapping for saving file
 nmap <leader>w :w<CR>
-"
+
 " Quickly close the current window
 nnoremap <leader>q :q<CR>
+
+" close current buffer
+nnoremap <leader>d :bd<CR>
+
+" open file explorer
+nmap <leader>p :Explore<CR>
 
 " Do not lost block selection after indentation
 vmap > >gv
@@ -533,20 +528,20 @@ nnoremap ,. '.
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " NERDTree toggle
-silent! nmap <silent> <Leader>p :NERDTreeToggle<CR>
-silent! nmap <silent> <leader>f :NERDTreeFind<CR>
+"silent! nmap <silent> <Leader>p :NERDTreeToggle<CR>
+"silent! nmap <silent> <leader>f :NERDTreeFind<CR>
 
 " Run all specs in tmux
-map <leader>rat :call VimuxRunCommand("`[ -e .zeus.sock ] && echo zeus` rspec spec/") <CR>
+"map <leader>rat :call VimuxRunCommand("`[ -e .zeus.sock ] && echo zeus` rspec spec/") <CR>
 
 " Gundo toggle
-nnoremap <F5> :GundoToggle<CR>
+"nnoremap <F5> :GundoToggle<CR>
 
 " ZenCoding expand
 let g:user_zen_leader_key = '<C-e>'
 
 " bufexplorer
-silent! map <leader>b :BufExplorer<cr>
+"silent! map <leader>b :BufExplorer<cr>
 
 
 " Get the current highlight group. Useful for then remapping the color
@@ -555,19 +550,19 @@ map ,hi :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 ""
 "" Tabular alignments
 ""
-" Ruby 1.9 hashes
-nmap <leader>a: :Tab/\w:\zs/l0l1<CR>
-vmap <leader>a: :Tab/\w:\zs/l0l1<CR>
-" Ruby hash rocket
-function IndentRHashes()
-  Tabularize /^[^:]*\zs:/r1c0l0
-  Tabularize /^[^=>]*\zs=>/l1
-endfunction
-nmap <leader>a> :call IndentRHashes()<CR>
-vmap <leader>a> :call IndentRHashes()<CR>
-" First equals sign
-nmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
-vmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
+" " Ruby 1.9 hashes
+" nmap <leader>a: :Tab/\w:\zs/l0l1<CR>
+" vmap <leader>a: :Tab/\w:\zs/l0l1<CR>
+" " Ruby hash rocket
+" function IndentRHashes()
+"   Tabularize /^[^:]*\zs:/r1c0l0
+"   Tabularize /^[^=>]*\zs=>/l1
+" endfunction
+" nmap <leader>a> :call IndentRHashes()<CR>
+" vmap <leader>a> :call IndentRHashes()<CR>
+" " First equals sign
+" nmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
+" vmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
 
 " Folding
 nnoremap <Space> za
@@ -645,7 +640,7 @@ command! -bang QA qa<bang>
 command! -bang Qa qa<bang>
 
 " Toggle zooming (temporarily display only the current one of multiple windows).
-noremap <leader>o :ZoomWin<cr>
+" noremap <leader>o :ZoomWin<cr>
 
 " Quickly switch between two most common white-space set-ups.
 noremap <leader>2 :set ts=2 sts=2 sw=2 expandtab<cr>
@@ -660,10 +655,13 @@ nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
 " YankRing
 nmap <leader>y :YRShow<cr>
 
+" output current file name without extension
+inoremap \fn <C-R>=expand("%:t:r")<CR>
+
 " Eclim
-nmap <leader>ji :JavaImport<CR>
-nmap <leader>js :JavaSearchContext<CR>
-nmap <leader>jg :JavaSearch<CR>
+"nmap <leader>ji :JavaImport<CR>
+"nmap <leader>js :JavaSearchContext<CR>
+"nmap <leader>jg :JavaSearch<CR>
 
 
 set t_Co=256          " enable 256-color mode.
