@@ -10,16 +10,11 @@ call vundle#rc()
 " :BundleUpdate to update all of them
 Bundle 'gmarik/vundle'
 
-" file explorer
-"Bundle 'scrooloose/nerdtree'
 " some sugar for netrw
 Bundle 'tpope/vim-vinegar'
-" syntax checking
-"Bundle 'scrooloose/syntastic'
 " as-you-type, fuzzy-search code completion engine (requires native modules
 " compilation)
 Bundle 'Valloric/YouCompleteMe'
-
 " Git in vim, use ,gs for git status then - to stage then C to commit
 " check :help Gstatus for more keys
 Bundle 'tpope/vim-fugitive'
@@ -28,7 +23,6 @@ Bundle 'tpope/vim-git'
 " A Vim plugin which shows a git diff in the 'gutter' (sign column).
 " It shows whether each line has been added, modified, and where lines have been removed.
 Bundle 'airblade/vim-gitgutter'
-
 " vim plugin for the Perl module / CLI script 'ack' (search)
 Bundle 'mileszs/ack.vim'
 " full path fuzzy file, buffer, mru, tag, ... finder
@@ -44,15 +38,12 @@ Bundle 'edsono/vim-matchit'
 Bundle 'tpope/vim-endwise'
 " quick jumping over text
 Bundle 'Lokaltog/vim-easymotion'
-"Bundle 'justinmk/vim-sneak'
-" add a buffer close to vim that doesn't close the window
-" Bundle 'rgarver/Kwbd.vim'
-
 " scala syntax
 Bundle 'derekwyatt/vim-scala'
 " sbt syntax
 Bundle 'derekwyatt/vim-sbt'
-
+" play templates syntax
+Bundle 'gre/play2vim'
 " improved js syntax
 Bundle 'jelera/vim-javascript-syntax'
 " improved javascript indentation
@@ -61,21 +52,6 @@ Bundle 'pangloss/vim-javascript'
 Bundle 'itspriddle/vim-jquery'
 " coffeescript runtime files
 Bundle 'kchmck/vim-coffee-script'
-" handlebars  and mustache templates syntax
-"Bundle 'mustache/vim-mustache-handlebars'
-
-" ROR tools (navigation, hl)
-"Bundle 'tpope/vim-rails'
-" lightweight support for Ruby's Bundler
-"Bundle 'tpope/vim-bundler'
-" custom text object for selecting ruby blockskk
-"Bundle 'nelstrom/vim-textobj-rubyblock'
-" ruby motions, text objects, syntax, omnicompl
-"Bundle 'vim-ruby/vim-ruby'
-" running your Ruby tests
-"Bundle 'skalnik/vim-vroom'
-
-
 Bundle 'othree/html5.vim'
 " maps for editing tags
 Bundle 'tpope/vim-ragtag'
@@ -84,56 +60,22 @@ Bundle 'mattn/zencoding-vim'
 Bundle 'hail2u/vim-css3-syntax'
 " runtime files for Haml, Sass, and SCSS
 Bundle 'tpope/vim-haml'
-
-" nginx syntax
-"Bundle 'vim-scripts/nginx.vim'
-Bundle 'gre/play2vim'
-
 " Comment stuff out
 Bundle 'tpope/vim-commentary'
-" easy commenting in many filetypes
-"Bundle 'scrooloose/nerdcommenter'
-" plugin to interact with tmux
-"Bundle 'benmills/vimux'
 " tmux config syntax
 Bundle 'peterhoeg/vim-tmux'
-" maintains a history of previous yanks, changes and deletes
-" visualizing undo tree to make it usable
-"Bundle 'sjl/gundo.vim'
-" snippets
-"Bundle 'garbas/vim-snipmate'
-" snippets for snipmate
-"Bundle 'honza/vim-snippets'
-" snipmate dependency
-Bundle 'tomtom/tlib_vim'
-" snipmate dependency
-Bundle 'MarcWeber/vim-addon-mw-utils'
 " make gvim-only colorschemes work transparently in terminal vim
 Bundle 'godlygeek/csapprox'
 " better-looking, more functional vim statusline
 Bundle 'bling/vim-airline'
-" quickly and easily switch between buffers
-"Bundle 'vim-scripts/bufexplorer.zip'
-" text filtering and alignment
-" Bundle 'godlygeek/tabular'
 " automatic closing of quotes, parenthesis, brackets, etc.
 Bundle 'jiangmiao/auto-pairs'
-" tmux syntax
+" yank history
 Bundle 'vim-scripts/YankRing.vim'
-" zoom into and out of a window
-"Bundle 'vim-scripts/ZoomWin'
-" extended session management
-"Bundle 'xolox/vim-session'
-" dependency for vim-session
-"Bundle 'xolox/vim-misc'
-" automatically create directories on write
-" Bundle 'DataWraith/auto_mkdir'
-
 " color schemes
-" Bundle 'rking/vim-detailed'
-" Bundle 'altercation/vim-colors-solarized'
 Bundle 'nanotech/jellybeans.vim'
 Bundle 'morhetz/gruvbox'
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" BASIC SETTINGS """""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
