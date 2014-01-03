@@ -6,6 +6,8 @@ filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
+" PLUGINS {{{
+
 " Bundler for vim, use :BundleInstall to install these bundles and
 " :BundleUpdate to update all of them
 Bundle 'gmarik/vundle'
@@ -23,10 +25,6 @@ Bundle 'tpope/vim-git'
 " A Vim plugin which shows a git diff in the 'gutter' (sign column).
 " It shows whether each line has been added, modified, and where lines have been removed.
 Bundle 'airblade/vim-gitgutter'
-" vim plugin for the Perl module / CLI script 'ack' (search)
-Bundle 'mileszs/ack.vim'
-" full path fuzzy file, buffer, mru, tag, ... finder
-Bundle 'kien/ctrlp.vim'
 " Surrond stuff with things. ysiw" surrounds a word with quotes
 " cs"' changes " to '
 Bundle 'tpope/vim-surround'
@@ -56,7 +54,7 @@ Bundle 'othree/html5.vim'
 " maps for editing tags
 Bundle 'tpope/vim-ragtag'
 " HTML/XML abbreviation editor
-Bundle 'mattn/zencoding-vim'
+Bundle 'mattn/emmet-vim'
 Bundle 'hail2u/vim-css3-syntax'
 " runtime files for Haml, Sass, and SCSS
 Bundle 'tpope/vim-haml'
@@ -68,13 +66,16 @@ Bundle 'peterhoeg/vim-tmux'
 Bundle 'godlygeek/csapprox'
 " better-looking, more functional vim statusline
 Bundle 'bling/vim-airline'
+" TODO
+Bundle 'Shougo/unite.vim'
+Bundle 'Shougo/vimproc.vim'
 " automatic closing of quotes, parenthesis, brackets, etc.
 Bundle 'jiangmiao/auto-pairs'
-" yank history
-Bundle 'vim-scripts/YankRing.vim'
 " color schemes
 Bundle 'nanotech/jellybeans.vim'
 Bundle 'morhetz/gruvbox'
+
+" }}}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""" BASIC SETTINGS """""""""""""""""""""""""""
@@ -96,8 +97,14 @@ filetype indent on    " load indent files
 set hidden            " allow buffer switching without saving
 set history=1000      " store commands history
 set autoread          " auto read when a file is change from the outside
-set clipboard=unnamedplus " yank to the system register (+) by default
-set grepprg=ack       " replace the default grep program with ack
+" Writes to the unnamed register also writes to the * and + registers. This
+" makes it easy to interact with the system clipboard
+if has('unnamedplus')
+  set clipboard=unnamedplus
+else
+  set clipboard=unnamed
+endif
+set grepprg=ack-grep  " replace the default grep program with ack
 
 
 
@@ -116,9 +123,11 @@ syntax enable         " Turn on syntax highlighting allowing local overrides
 " Use nicer representations when showing invisible characters.
 set listchars=""
 set listchars+=tab:\▸\ ,trail:·,extends:»,precedes:«
+set fillchars+=vert:│ " better looking for windows separator (only in terminal vim)
 set showbreak=↪
 " Don't render tag contents with bold, italic & underline in HTML.
 let html_no_rendering=1
+set lazyredraw        " only redraws if it is needed
 
 
 ""
@@ -184,17 +193,15 @@ set sidescroll=1     " Number of cols to scroll at a time
 set scrolljump=5     " Lines to scroll when cursor leaves screen
 
 ""
-"" Completion
+"" Command line completion
 ""
-set wildignore+=*.o,*.obj,.git,*.rbc,*.class,.svn,vendor/gems/*,public/javascripts/compiled
-set wildignore+=*.css,tmp,*.orig,*.jpg,*.png,*.gif,log,solr,.sass-cache,.jhw-cache
+set wildmenu                        " Command line autocompletion
+set wildmode=list:longest,full      " Shows all the options
+set wildignore+=*.o,*.obj,.git,*.rbc,*.class,.svn,vendor/gems/*,public/javascripts/compiled,target/*
+set wildignore+=*.css,tmp,*.orig,*.jpg,*.png,*.gif,log,solr,.sass-cache,.jhw-cache,.idea,.idea_modules
 set wildignore+=bundler_stubs,build,error_pages,bundle,build,error_pages
 set wildignore+=.DS_Store
-" ruby
-" let g:rubycomplete_buffer_loading = 1
-" let g:rubycomplete_rails = 1
 
-autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
 
 ""
 "" Editor
@@ -250,6 +257,8 @@ endif
 
 " treat scss files also as css
 autocmd BufNewFile,BufRead *.scss             set ft=scss.css
+" set indentation to 4 spaces in java sources
+autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
 
 """
 """ Netrw
@@ -257,28 +266,12 @@ autocmd BufNewFile,BufRead *.scss             set ft=scss.css
 " netrw preview in vertical split
 let g:netrw_preview = 1
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""" PLUGINS SETTINGS """""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" PLUGINS SETTINGS {{{
 
 ""
-"" Zencoding
+"" Emmet
 ""
-let g:user_zen_settings = {
-  \ 'php' : {
-  \ 'extends' : 'html',
-  \ 'filters' : 'c',
-  \ },
-  \ 'xml' : {
-  \ 'extends' : 'html',
-  \ },
-  \ 'haml' : {
-  \ 'extends' : 'html',
-  \ },
-  \ 'erb' : {
-  \ 'extends' : 'html',
-  \ },
- \}
+let g:user_emmet_leader_key='<C-e>'
 
 ""
 "" snipMate
@@ -299,64 +292,11 @@ let g:user_zen_settings = {
 "let g:vroom_spec_command = '`[ -e .zeus.sock ] && echo zeus` rspec '
 
 ""
-"" Vimux
-""
-" Use exising pane (not used by vim) if found instead of running split-window.
-"let VimuxUseNearestPane = 1
-
-""
-"" NERDTree
-""
-"" Show the bookmarks table on startup
-"let NERDTreeShowBookmarks=1
-"" exclude
-"let NERDTreeIgnore=['\.pyc', '\~$', '\.swo$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
-"let NERDTreeChDirMode=0
-"" quit NERDTree after openning a file
-"let NERDTreeQuitOnOpen=1
-"" Use a single click to fold/unfold directories and a double click to open files
-"let NERDTreeMouseMode=2
-"" show hidden files and directories
-"let NERDTreeShowHidden=1
-"let NERDTreeKeepTreeInNewTab=1
-"let g:nerdtree_tabs_open_on_gui_startup=0
-"let NERDTreeMinimalUI = 1
-"let NERDTreeDirArrows = 1
-"let g:NERDTreeWinSize = 30
-"" Highlight the selected entry in the tree
-"let NERDTreeHighlightCursorline = 1
-"let g:NERDShutUp=1
-
-""
-"" ctrlP
-""
-" project root search policy
-let g:ctrlp_working_path_mode = 'ra' " r - try to find root, a - current dir
-let g:ctrlp_custom_ignore = {
-            \ 'dir': '\.git$\|\.hg$\|\.svn$',
-            \ 'file': '\.exe$\|\.so$\|\.dll$' }
-" jump to buffer in the same tab if already open
-let g:ctrlp_switch_buffer = 1
-" default by filename
-let g:ctrlp_by_filename = 1
-let g:ctrlp_extensions = ['tag', 'buffertag']
-
-""
 "" EasyMotion
 ""
 " highlight colors
 hi link EasyMotionTarget ErrorMsg
 hi link EasyMotionShade Comment
-
-""
-"" solarized
-""
-let g:solarized_termcolors=256
-
-""
-"" YankRing
-""
-let g:yankring_replace_n_pkey = ''
 
 ""
 "" syntastic
@@ -365,11 +305,6 @@ let g:yankring_replace_n_pkey = ''
 "let g:syntastic_warning_symbol='⚠'
 "" user faster fsc compiler by default
 "let g:syntastic_scala_checkers=['fsc']
-
-""
-"" Sessions
-""
-" let g:session_autosave = 'no'
 
 ""
 "" Airline
@@ -384,13 +319,28 @@ let g:ycm_confirm_extra_conf=0
 set completeopt-=preview
 
 ""
-"" Eclim
+"" Unite
 ""
-"let g:EclimCompletionMethod = 'omnifunc'
+" use ack instead of grep if available
+if executable('ack-grep')
+  let g:unite_source_grep_command='ack-grep'
+  let g:unite_source_grep_default_opts='--no-group --no-color'
+  let g:unite_source_grep_recursive_opt=''
+  let g:unite_source_grep_search_word_highlight = 1
+endif
+" enable yank history
+let g:unite_source_history_yank_enable = 1
+" sort by rank
+call unite#filters#sorter_default#use(['sorter_rank'])
+" ignores
+call unite#custom#source('file_rec/async', 'ignore_pattern', '.*\(\.idea\|\.idea_modules\|target\|\.git\)/.*$')
+" uze fuzzy matching
+call unite#filters#matcher_default#use(['matcher_fuzzy'])
+let g:unite_candidate_icon="▸"
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""" KEY MAPPINGS """""""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" }}}
+
+" BUILT-IN MAPPINGS {{{
 " Use jk as <Esc> alternative
 inoremap jk <Esc>
 inoremap kj <Esc>
@@ -469,42 +419,9 @@ nnoremap ,. '.
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" NERDTree toggle
-"silent! nmap <silent> <Leader>p :NERDTreeToggle<CR>
-"silent! nmap <silent> <leader>f :NERDTreeFind<CR>
-
-" Run all specs in tmux
-"map <leader>rat :call VimuxRunCommand("`[ -e .zeus.sock ] && echo zeus` rspec spec/") <CR>
-
-" Gundo toggle
-"nnoremap <F5> :GundoToggle<CR>
-
-" ZenCoding expand
-let g:user_zen_leader_key = '<C-e>'
-
-" bufexplorer
-"silent! map <leader>b :BufExplorer<cr>
-
 
 " Get the current highlight group. Useful for then remapping the color
 map ,hi :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">" . " FG:" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"fg#")<CR>
-
-""
-"" Tabular alignments
-""
-" " Ruby 1.9 hashes
-" nmap <leader>a: :Tab/\w:\zs/l0l1<CR>
-" vmap <leader>a: :Tab/\w:\zs/l0l1<CR>
-" " Ruby hash rocket
-" function IndentRHashes()
-"   Tabularize /^[^:]*\zs:/r1c0l0
-"   Tabularize /^[^=>]*\zs=>/l1
-" endfunction
-" nmap <leader>a> :call IndentRHashes()<CR>
-" vmap <leader>a> :call IndentRHashes()<CR>
-" " First equals sign
-" nmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
-" vmap <leader>a= :Tabularize /^[^=]*\zs=<CR>
 
 " Folding
 nnoremap <Space> za
@@ -512,6 +429,59 @@ vnoremap <Space> za
 
 " Reselect text that was just pasted with ,v
 nnoremap <leader>v V`]
+
+" output current file name without extension
+inoremap \fn <C-R>=expand("%:t:r")<CR>
+
+" new line in insert mode
+imap <C-o> <esc>o
+
+"" Tab navigation
+" Easily create a new tab.
+map <Leader>tt :tabnew<CR>
+" Easily close a tab.
+map <Leader>tc :tabclose<CR>
+" Easily move a tab.
+noremap <Leader>tm :tabmove<CR>
+" Easily go to next tab.
+noremap <Leader>tn :tabnext<CR>
+" Easily go to previous tab.
+noremap <Leader>tp :tabprevious<CR>
+
+" shift key typos fixes
+command! -bang -nargs=* -complete=file E e<bang> <args>
+command! -bang -nargs=* -complete=file W w<bang> <args>
+command! -bang -nargs=* -complete=file Wq wq<bang> <args>
+command! -bang -nargs=* -complete=file WQ wq<bang> <args>
+command! -bang Wa wa<bang>
+command! -bang WA wa<bang>
+command! -bang Q q<bang>
+command! -bang QA qa<bang>
+command! -bang Qa qa<bang>
+
+" <Leader>``: Force quit all
+nnoremap <Leader>`` :qa!<cr>
+
+" Make the current directory
+nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
+
+" CTags
+map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
+
+" Quickly switch between two most common white-space set-ups.
+noremap <leader>2 :set ts=2 sts=2 sw=2 expandtab<cr>
+noremap <leader>4 :set ts=4 sts=4 sw=4 expandtab<cr>
+
+" }}}
+
+" PLUGINS MAPPINGS {{{
+
+" NERDTree toggle
+"silent! nmap <silent> <Leader>p :NERDTreeToggle<CR>
+"silent! nmap <silent> <leader>f :NERDTreeFind<CR>
+
+" Run all specs in tmux
+"map <leader>rat :call VimuxRunCommand("`[ -e .zeus.sock ] && echo zeus` rspec spec/") <CR>
 
 ""
 "" Surround
@@ -547,7 +517,6 @@ map ,{ ysiw{
 vmap ,} c{ <C-R>" }<ESC>
 vmap ,{ c{<C-R>"}<ESC>
 
-
 ""
 "" Fugitive mappings
 ""
@@ -555,60 +524,26 @@ nmap <leader>gs :Gstatus<CR>
 nmap <leader>gc :Gcommit<CR>
 nmap <leader>gp :Git push<CR>
 
-" new line in insert mode
-imap <C-o> <esc>o
 
-"" Tab navigation
-" Easily create a new tab.
-map <Leader>tt :tabnew<CR>
-" Easily close a tab.
-map <Leader>tc :tabclose<CR>
-" Easily move a tab.
-noremap <Leader>tm :tabmove<CR>
-" Easily go to next tab.
-noremap <Leader>tn :tabnext<CR>
-" Easily go to previous tab.
-noremap <Leader>tp :tabprevious<CR>
+""
+"" Unite mappings
+""
+" fuzzy file search. start in insert mode
+nnoremap <C-p> :Unite -start-insert file_rec/async<cr>
+" yank history
+nnoremap <leader>y :<C-u>Unite history/yank<CR>
+" search content
+nnoremap <leader>ack :Unite grep:.<CR>
+" quick buffer switching
+nnoremap <leader>b :Unite -quick-match buffer<CR>
 
-" shift key typos fixes
-command! -bang -nargs=* -complete=file E e<bang> <args>
-command! -bang -nargs=* -complete=file W w<bang> <args>
-command! -bang -nargs=* -complete=file Wq wq<bang> <args>
-command! -bang -nargs=* -complete=file WQ wq<bang> <args>
-command! -bang Wa wa<bang>
-command! -bang WA wa<bang>
-command! -bang Q q<bang>
-command! -bang QA qa<bang>
-command! -bang Qa qa<bang>
+" }}}
 
-" Toggle zooming (temporarily display only the current one of multiple windows).
-" noremap <leader>o :ZoomWin<cr>
-
-" Quickly switch between two most common white-space set-ups.
-noremap <leader>2 :set ts=2 sts=2 sw=2 expandtab<cr>
-noremap <leader>4 :set ts=4 sts=4 sw=4 expandtab<cr>
-
-" CTags
-map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
-
-" Make the current directory
-nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
-
-" YankRing
-nmap <leader>y :YRShow<cr>
-
-" output current file name without extension
-inoremap \fn <C-R>=expand("%:t:r")<CR>
-
-" Eclim
-"nmap <leader>ji :JavaImport<CR>
-"nmap <leader>js :JavaSearchContext<CR>
-"nmap <leader>jg :JavaSearch<CR>
-
-
+" COLOR SCHEME {{{
 set t_Co=256          " enable 256-color mode.
 set background=dark   " assume a dark background
 colorscheme jellybeans
 if has('gui_running')
   colorscheme gruvbox
 endif
+" }}}
