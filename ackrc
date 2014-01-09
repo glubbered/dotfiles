@@ -6,6 +6,7 @@
 --type-set=cucumber=.feature
 --ignore-dir=log
 --ignore-dir=tmp
+--ignore-dir=target
 --sort-files
 --color
 --follow

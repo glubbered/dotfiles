@@ -234,6 +234,27 @@ autocmd BufReadPost *
       \ exe "normal g`\"" |
       \ endif
 
+" Don't close window, when deleting a buffer
+command! Bclose call <SID>BufcloseCloseIt()
+function! <SID>BufcloseCloseIt()
+   let l:currentBufNum = bufnr("%")
+   let l:alternateBufNum = bufnr("#")
+
+   if buflisted(l:alternateBufNum)
+     buffer #
+   else
+     bnext
+   endif
+
+   if bufnr("%") == l:currentBufNum
+     new
+   endif
+
+   if buflisted(l:currentBufNum)
+     execute("bdelete! ".l:currentBufNum)
+   endif
+endfunction
+
 ""
 "" GUI Settings
 ""
@@ -400,7 +421,7 @@ nmap <leader>w :w<CR>
 nnoremap <leader>q :q<CR>
 
 " close current buffer
-nnoremap <leader>d :bd<CR>
+nnoremap <leader>d :Bclose<CR>
 
 " open file explorer
 nmap <leader>p :Explore<CR>
@@ -418,7 +439,6 @@ nnoremap ,. '.
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
-
 
 " Get the current highlight group. Useful for then remapping the color
 map ,hi :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">" . " FG:" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"fg#")<CR>
@@ -523,7 +543,6 @@ vmap ,{ c{<C-R>"}<ESC>
 nmap <leader>gs :Gstatus<CR>
 nmap <leader>gc :Gcommit<CR>
 nmap <leader>gp :Git push<CR>
-
 
 ""
 "" Unite mappings
