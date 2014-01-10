@@ -75,6 +75,10 @@ Bundle 'jiangmiao/auto-pairs'
 Bundle 'nanotech/jellybeans.vim'
 Bundle 'morhetz/gruvbox'
 
+if filereadable(expand('~/.vimrc.bundles.local'))
+  source ~/.vimrc.bundles.local
+endif
+
 " }}}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -106,7 +110,8 @@ else
 endif
 set grepprg=ack-grep  " replace the default grep program with ack
 
-
+set exrc            " enable per-directory .vimrc files
+set secure          " disable unsafe commands in local .vimrc files
 
 ""
 "" Display
@@ -234,6 +239,15 @@ autocmd BufReadPost *
       \ exe "normal g`\"" |
       \ endif
 
+" Save when losing focus
+au FocusLost    * :silent! wall
+
+" treat scss files also as css
+autocmd BufNewFile,BufRead *.scss   ft=scss.css
+
+" set indentation to 4 spaces in java sources
+autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
+
 " Don't close window, when deleting a buffer
 command! Bclose call <SID>BufcloseCloseIt()
 function! <SID>BufcloseCloseIt()
@@ -272,14 +286,12 @@ if has('gui_running')
   set lines=40
   "set guifont=Source\ Code\ Pro\ for\ Powerline\ 14
   set guifont=PT\ Mono\ for\ Powerline\ 13
-  set shell=/bin/zsh
+
+  if executable('zsh')
+    set shell=zsh\ -l
+  endif
 endif
 
-
-" treat scss files also as css
-autocmd BufNewFile,BufRead *.scss             set ft=scss.css
-" set indentation to 4 spaces in java sources
-autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
 
 """
 """ Netrw
