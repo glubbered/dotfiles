@@ -1,10 +1,10 @@
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""""" Vundle """"""""""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" VUNDLE {{{
 set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
+
+" }}}
 
 " PLUGINS {{{
 
@@ -12,11 +12,6 @@ call vundle#rc()
 " :BundleUpdate to update all of them
 Bundle 'gmarik/vundle'
 
-" some sugar for netrw
-Bundle 'tpope/vim-vinegar'
-" as-you-type, fuzzy-search code completion engine (requires native modules
-" compilation)
-Bundle 'Valloric/YouCompleteMe'
 " Git in vim, use ,gs for git status then - to stage then C to commit
 " check :help Gstatus for more keys
 Bundle 'tpope/vim-fugitive'
@@ -25,23 +20,27 @@ Bundle 'tpope/vim-git'
 " A Vim plugin which shows a git diff in the 'gutter' (sign column).
 " It shows whether each line has been added, modified, and where lines have been removed.
 Bundle 'airblade/vim-gitgutter'
-" Surrond stuff with things. ysiw" surrounds a word with quotes
-" cs"' changes " to '
-Bundle 'tpope/vim-surround'
+
 " defining custom text objects
 Bundle 'kana/vim-textobj-user'
-" extended % matching
-Bundle 'edsono/vim-matchit'
-" helps to end certain structures automatically
-Bundle 'tpope/vim-endwise'
 " quick jumping over text
-Bundle 'Lokaltog/vim-easymotion'
+Bundle 'justinmk/vim-sneak'
+" some sugar for netrw
+Bundle 'tpope/vim-vinegar'
+" TODO
+Bundle 'Shougo/unite.vim'
+" tags source for unite
+Bundle 'tsukkee/unite-tag'
+" unite dependency (native module)
+Bundle 'Shougo/vimproc.vim'
+
 " scala syntax
 Bundle 'derekwyatt/vim-scala'
 " sbt syntax
 Bundle 'derekwyatt/vim-sbt'
 " play templates syntax
 Bundle 'gre/play2vim'
+
 " improved js syntax
 Bundle 'jelera/vim-javascript-syntax'
 " improved javascript indentation
@@ -51,29 +50,39 @@ Bundle 'itspriddle/vim-jquery'
 " coffeescript runtime files
 Bundle 'kchmck/vim-coffee-script'
 Bundle 'othree/html5.vim'
+Bundle 'hail2u/vim-css3-syntax'
+" runtime files for Haml, Sass, and SCSS
+Bundle 'tpope/vim-haml'
+
 " maps for editing tags
 Bundle 'tpope/vim-ragtag'
 " HTML/XML abbreviation editor
 Bundle 'mattn/emmet-vim'
-Bundle 'hail2u/vim-css3-syntax'
-" runtime files for Haml, Sass, and SCSS
-Bundle 'tpope/vim-haml'
 " Comment stuff out
 Bundle 'tpope/vim-commentary'
+" automatic closing of quotes, parenthesis, brackets, etc.
+Bundle 'jiangmiao/auto-pairs'
+" Surrond stuff with things. ysiw" surrounds a word with quotes
+" cs"' changes " to '
+Bundle 'tpope/vim-surround'
+" helps to end certain structures automatically
+Bundle 'tpope/vim-endwise'
+" as-you-type, fuzzy-search code completion engine (requires native modules
+" compilation)
+Bundle 'Valloric/YouCompleteMe'
+
 " tmux config syntax
 Bundle 'peterhoeg/vim-tmux'
 " make gvim-only colorschemes work transparently in terminal vim
 Bundle 'godlygeek/csapprox'
 " better-looking, more functional vim statusline
-Bundle 'bling/vim-airline'
-" TODO
-Bundle 'Shougo/unite.vim'
-Bundle 'Shougo/vimproc.vim'
-" automatic closing of quotes, parenthesis, brackets, etc.
-Bundle 'jiangmiao/auto-pairs'
+" Bundle 'bling/vim-airline'
+Bundle 'itchyny/lightline.vim'
+
 " color schemes
 Bundle 'nanotech/jellybeans.vim'
 Bundle 'morhetz/gruvbox'
+Bundle 'junegunn/seoul256.vim'
 
 if filereadable(expand('~/.vimrc.bundles.local'))
   source ~/.vimrc.bundles.local
@@ -81,9 +90,8 @@ endif
 
 " }}}
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""" BASIC SETTINGS """""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" BASIC {{{
+
 let mapleader = ","  " leader key
 let g:mapleader=","
 set nocompatible      " Use vim, no vi defaults
@@ -108,7 +116,7 @@ if has('unnamedplus')
 else
   set clipboard=unnamed
 endif
-set grepprg=ack-grep  " replace the default grep program with ack
+set grepprg=ag\ --nogroup\ --nocolor " replace the default grep program with ag
 
 set exrc            " enable per-directory .vimrc files
 set secure          " disable unsafe commands in local .vimrc files
@@ -147,7 +155,7 @@ set smarttab                      " Use shift-width for tabbing. Ignore tabstop 
 set list                          " Show invisible characters
 set backspace=indent,eol,start    " backspace through everything in insert mode
 set autoindent                    " indent at the same level of the previous line
-
+set textwidth=0                   " don't wrap long lines
 
 ""
 "" Searching
@@ -169,7 +177,7 @@ set noswapfile
 "" Statusline
 ""
 " unless we're using airline
-if !exists('g:loaded_airline') || !g:loaded_airline
+if !exists('g:loaded_lightline') || !g:loaded_lightline "!exists('g:loaded_airline') || !g:loaded_airline
   set laststatus=2
 
   " Broken down into easily includeable segments
@@ -198,7 +206,7 @@ set sidescroll=1     " Number of cols to scroll at a time
 set scrolljump=5     " Lines to scroll when cursor leaves screen
 
 ""
-"" Command line completion
+"" Command line editing
 ""
 set wildmenu                        " Command line autocompletion
 set wildmode=list:longest,full      " Shows all the options
@@ -211,63 +219,16 @@ set wildignore+=.DS_Store
 ""
 "" Editor
 ""
-set formatoptions-=o 	  "dont continue comments when pushing o/O
+set formatoptions-=o    "dont continue comments when pushing o/O
+set formatoptions+=j    " delete comment char on second line when joining two commented lines
 set virtualedit=onemore " allow for cursor beyond last character
 set viewoptions=folds,options,cursor,unix,slash " better unix / windows compatibility
 
-" Strip trailing whitespace
-function! <SID>StripTrailingWhitespaces()
-    " Preparation: save last search, and cursor position.
-    let _s=@/
-    let l = line(".")
-    let c = col(".")
-    " Do the business:
-    %s/\s\+$//e
-    " Clean up: restore previous search history, and cursor position
-    let @/=_s
-    call cursor(l, c)
-endfunction
-
-" Strip whitespace on write
-autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
-
-" When editing a file, always jump to the last known cursor position.
-" Don't do it when the position is invalid or when inside an event handler
-" (happens when dropping a file on gvim).
-autocmd BufReadPost *
-      \ if line("'\"") > 0 && line("'\"") <= line("$") |
-      \ exe "normal g`\"" |
-      \ endif
-
-" Save when losing focus
-au FocusLost    * :silent! wall
-
-" treat scss files also as css
-autocmd BufNewFile,BufRead *.scss   ft=scss.css
-
-" set indentation to 4 spaces in java sources
-autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
-
-" Don't close window, when deleting a buffer
-command! Bclose call <SID>BufcloseCloseIt()
-function! <SID>BufcloseCloseIt()
-   let l:currentBufNum = bufnr("%")
-   let l:alternateBufNum = bufnr("#")
-
-   if buflisted(l:alternateBufNum)
-     buffer #
-   else
-     bnext
-   endif
-
-   if bufnr("%") == l:currentBufNum
-     new
-   endif
-
-   if buflisted(l:currentBufNum)
-     execute("bdelete! ".l:currentBufNum)
-   endif
-endfunction
+"""
+""" Netrw
+"""
+" netrw preview in vertical split
+let g:netrw_preview = 1
 
 ""
 "" GUI Settings
@@ -292,44 +253,159 @@ if has('gui_running')
   endif
 endif
 
+" }}}
 
-"""
-""" Netrw
-"""
-" netrw preview in vertical split
-let g:netrw_preview = 1
+" FUNCTIONS {{{
+"
+" Incremental ctags generation
+function! GenerateTagsIncrementally()
+python << EOF
+import os
+import os.path
+
+command = 'ctags --append --exclude=build --exclude=target --exclude=.git --exclude=log --exclude=tmp --extra=+q -R '
+if os.path.isfile('tags'):
+  print('Generating tags incrementally.')
+  # Walk the file tree, if a file has an mtime more recent than the tag file,
+  # add it to the list of files to index.
+  tags_mtime = os.stat('tags').st_mtime
+  with open('list', 'w') as fp:
+      for dirpath, dirnames, filenames in os.walk(os.getcwd()):
+          for filename in filenames:
+              full_path = os.path.join(dirpath, filename)
+              if os.stat(full_path).st_mtime > tags_mtime:
+                  fp.write(full_path + '\n')
+
+  # Run ctags using the created list of files.
+  os.system(command + '-L list')
+  os.remove('list')
+else:
+  os.system(command + '*')
+EOF
+endfunction
+command! GenerateTagsIncrementally call GenerateTagsIncrementally()
+
+" Strip trailing whitespace
+function! <SID>StripTrailingWhitespaces()
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+
+" Don't close window, when deleting a buffer
+command! Bclose call <SID>BufcloseCloseIt()
+function! <SID>BufcloseCloseIt()
+   let l:currentBufNum = bufnr("%")
+   let l:alternateBufNum = bufnr("#")
+
+   if buflisted(l:alternateBufNum)
+     buffer #
+   else
+     bnext
+   endif
+
+   if bufnr("%") == l:currentBufNum
+     new
+   endif
+
+   if buflisted(l:currentBufNum)
+     execute("bdelete! ".l:currentBufNum)
+   endif
+endfunction
+
+" }}}
+
+" AUTO {{{
+
+" Strip whitespace on write
+autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+
+" When editing a file, always jump to the last known cursor position.
+" Don't do it when the position is invalid or when inside an event handler
+" (happens when dropping a file on gvim).
+autocmd BufReadPost *
+      \ if line("'\"") > 0 && line("'\"") <= line("$") |
+      \ exe "normal g`\"" |
+      \ endif
+
+" Save when losing focus
+au FocusLost    * :silent! wall
+
+" treat scss files also as css
+autocmd BufNewFile,BufRead *.scss   ft=scss.css
+
+" set indentation to 4 spaces in java sources
+autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
+
+" }}}
 
 " PLUGINS SETTINGS {{{
+
+" Lightline {{{
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'fugitive', 'filename' ] ]
+      \ },
+      \ 'component_function': {
+      \   'fugitive': 'MyFugitive',
+      \   'filename': 'MyFilename'
+      \ },
+      \ 'separator': { 'left': '⮀', 'right': '⮂' },
+      \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
+      \ }
+
+function! MyModified()
+  if &filetype == "help"
+    return ""
+  elseif &modified
+    return "+"
+  elseif &modifiable
+    return ""
+  else
+    return ""
+  endif
+endfunction
+
+function! MyReadonly()
+  if &filetype == "help"
+    return ""
+  elseif &readonly
+    return "⭤"
+  else
+    return ""
+  endif
+endfunction
+
+function! MyFugitive()
+  if exists("*fugitive#head")
+    let _ = fugitive#head()
+    return strlen(_) ? '⭠ '._ : ''
+  endif
+  return ''
+endfunction
+
+function! MyFilename()
+  let fname = expand('%:t')
+  return ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
+        \ (&ft == 'unite' ? unite#get_status_string() :
+        \ '' != fname ? fname : '[No Name]') .
+        \ ('' != MyModified() ? ' ' . MyModified() : '')
+endfunction
+
+" }}}
 
 ""
 "" Emmet
 ""
 let g:user_emmet_leader_key='<C-e>'
-
-""
-"" snipMate
-""
-"let g:snipMate = {}
-"let g:snipMate.scope_aliases = {}
-"" use snippets from javascript-jquery in javascript
-"let g:snipMate.scope_aliases['javascript'] = 'javascript,javascript-jquery'
-
-""
-"" Vroom
-""
-"if $TMUX != ''
-  "let g:vroom_use_vimux = 1 " use vimux when running tests by vroom
-"end
-"let g:vroom_use_bundle_exec = 0 " don't use bundler (for faster specs)
-"" zeus support
-"let g:vroom_spec_command = '`[ -e .zeus.sock ] && echo zeus` rspec '
-
-""
-"" EasyMotion
-""
-" highlight colors
-hi link EasyMotionTarget ErrorMsg
-hi link EasyMotionShade Comment
 
 ""
 "" syntastic
@@ -342,7 +418,7 @@ hi link EasyMotionShade Comment
 ""
 "" Airline
 ""
-let g:airline_powerline_fonts = 1
+" let g:airline_powerline_fonts = 1
 
 ""
 "" YouCompleteMe
@@ -354,13 +430,14 @@ set completeopt-=preview
 ""
 "" Unite
 ""
-" use ack instead of grep if available
-if executable('ack-grep')
-  let g:unite_source_grep_command='ack-grep'
-  let g:unite_source_grep_default_opts='--no-group --no-color'
-  let g:unite_source_grep_recursive_opt=''
-  let g:unite_source_grep_search_word_highlight = 1
+" Use ag for search
+if executable('ag')
+  let g:unite_source_grep_command = 'ag'
+  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+  let g:unite_source_grep_recursive_opt = ''
+  let g:unite_source_rec_async_command= 'ag --nocolor --nogroup --hidden -g ""'
 endif
+let g:unite_force_overwrite_statusline = 0
 " enable yank history
 let g:unite_source_history_yank_enable = 1
 " sort by rank
@@ -371,9 +448,16 @@ call unite#custom#source('file_rec/async', 'ignore_pattern', '.*\(\.idea\|\.idea
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 let g:unite_candidate_icon="▸"
 
+"""
+""" Sneak
+"""
+" behave simillar to easymotion if there are more then 2 matches
+let g:sneak#streak = 1
+
 " }}}
 
 " BUILT-IN MAPPINGS {{{
+
 " Use jk as <Esc> alternative
 inoremap jk <Esc>
 inoremap kj <Esc>
@@ -390,9 +474,6 @@ cmap w!! %!sudo tee > /dev/null %
 map j gj
 map k gk
 
-" avoid pressing shift to enter command mode
-nnoremap ; :
-
 " Toggle paste mode
 nmap <silent> <F4> :set invpaste<CR>:set paste?<CR>
 imap <silent> <F4> <ESC>:set invpaste<CR>:set paste?<CR>
@@ -403,6 +484,8 @@ map <Insert> :set paste<CR>"+p:set nopaste<CR>
 
 " Toggle hlsearch with <leader>hs
 nmap <leader>hs :set hlsearch! hlsearch?<CR>
+" and with enter
+nnoremap <silent> <CR> :nohlsearch<cr>
 
 " Yank from the cursor to the end of the line, to be consistent with C and D.
 nnoremap Y y$
@@ -441,10 +524,6 @@ nmap <leader>p :Explore<CR>
 " Do not lost block selection after indentation
 vmap > >gv
 vmap < <gv
-
-" Insert blank lines without going into insert mode shortcut
-nmap t o<ESC>k
-nmap T O<ESC>j
 
 " go to last edit location with ,.
 nnoremap ,. '.
@@ -497,9 +576,6 @@ nnoremap <Leader>`` :qa!<cr>
 " Make the current directory
 nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
 
-" CTags
-map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
-
 " Quickly switch between two most common white-space set-ups.
 noremap <leader>2 :set ts=2 sts=2 sw=2 expandtab<cr>
 noremap <leader>4 :set ts=4 sts=4 sw=4 expandtab<cr>
@@ -507,13 +583,6 @@ noremap <leader>4 :set ts=4 sts=4 sw=4 expandtab<cr>
 " }}}
 
 " PLUGINS MAPPINGS {{{
-
-" NERDTree toggle
-"silent! nmap <silent> <Leader>p :NERDTreeToggle<CR>
-"silent! nmap <silent> <leader>f :NERDTreeFind<CR>
-
-" Run all specs in tmux
-"map <leader>rat :call VimuxRunCommand("`[ -e .zeus.sock ] && echo zeus` rspec spec/") <CR>
 
 ""
 "" Surround
@@ -567,14 +636,18 @@ nnoremap <leader>y :<C-u>Unite history/yank<CR>
 nnoremap <leader>ack :Unite grep:.<CR>
 " quick buffer switching
 nnoremap <leader>b :Unite -quick-match buffer<CR>
+" tags navigation
+nnoremap <leader>t :GenerateTagsIncrementally<CR>:Unite -start-insert tag<CR>
 
 " }}}
 
 " COLOR SCHEME {{{
-set t_Co=256          " enable 256-color mode.
-set background=dark   " assume a dark background
-colorscheme jellybeans
-if has('gui_running')
-  colorscheme gruvbox
+
+if !has('gui_running')
+  set t_Co=256          " enable 256-color mode.
 endif
+set background=dark   " assume a dark background
+let g:seoul256_background = 234
+colo seoul256
+
 " }}}
