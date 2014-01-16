@@ -651,3 +651,26 @@ let g:seoul256_background = 234
 colo seoul256
 
 " }}}
+
+func! AddImport()
+  let wordUnderCursor = expand("<cword>")
+  let cmd = "bash ~/Projects/imports.sh" . " " . wordUnderCursor
+  let candidates = split(system(cmd), '\n')
+  let i_candidates = map(candidates, '"import " . v:val')
+  let idx = inputlist(i_candidates)
+
+  let selected = i_candidates[idx]
+
+  normal G$
+  let last_import_pos = searchpos('^import', 'bnW')[0]
+  if last_import_pos != 0
+    call append(last_import_pos, selected)
+  else
+    let package_pos = searchpos('^package', 'nW')[0]
+    if package_pos != 0
+      call append(package_pos, selected)
+    endif
+  endif
+  return ''
+endfunc
+inoremap <F10> <C-R>=AddImport()<CR>
