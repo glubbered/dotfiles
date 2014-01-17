@@ -1,25 +1,44 @@
 #!/bin/bash
+shopt -s globstar
+shopt -s extglob
 
 search_for="$1"
-search_for+=".class"
+search_for_pattern="(\\$|/)$search_for.class"
 
-paths=( "/home/wedens/Projects/zenith-portal/zenith-portal/build/regserver/webapp/WEB-INF/classes" "/home/wedens/Projects/zenith-portal/zenith-portal/build/client/classes" )
+search_path="$2"
+search_path=(${search_path//;/ })
+
+paths=()
+jars=()
+
+for sp in "${search_path[@]}"
+do
+  case $sp in
+    *\*.jar)
+      globbed_jars=( ${sp}  )
+      jars=( "${jars[@]}" "${globbed_jars[@]}" )
+      ;;
+    *.jar) jars=( "${jars[@]}" $sp ) ;;
+    *) paths=( "${paths[@]}" $sp ) ;;
+  esac
+done
+# echo "jars:"
+# printf '%s\n' "${jars[@]}"
+# echo "paths:"
+# printf '%s\n' "${paths[@]}"
 
 RESULT=()
 for p in "${paths[@]}"
 do
   esc_path=${p//\//\\/}
   esc_path+="\\/"
-  matches=( $(ag -g "$search_for" "$p" | sed "s/$esc_path//g" | sed "s/\\$/./g" | sed "s/\.class//g" | sed "s/\//\./g") )
+  matches=( $(ag -g "$search_for_pattern" "$p" | sed "s/$esc_path//g" | sed "s/\\$/./g" | sed "s/\.class//g" | sed "s/\//\./g") )
   RESULT=( "${RESULT[@]}" "${matches[@]}" )
 done
 
-
-jars=( "/home/wedens/Projects/zenith-portal/zenith-portal/lib/spring/org.springframework.orm-3.0.5.RELEASE.jar" )
-
 for j in "${jars[@]}"
 do
-  matches=( $(jar tf "$j" | ag "$search_for" | sed "s/\\$/./g" | sed "s/\.class//g" | sed "s/\//\./g")  )
+  matches=( $(jar tf "$j" | ag "$search_for_pattern" | sed "s/\\$/./g" | sed "s/\.class//g" | sed "s/\//\./g")  )
   RESULT=( "${RESULT[@]}" "${matches[@]}" )
 done
 
