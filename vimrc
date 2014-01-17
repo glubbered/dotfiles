@@ -655,6 +655,96 @@ colo seoul256
 " default
 let g:java_imports_search_paths = "/usr/lib/jvm/java-7-oracle/jre/lib/rt.jar;/home/wedens/Projects/zenith-portal/zenith-portal/lib/**.jar"
 
+function! s:unique(list)
+  " Remove duplicate values from the given list in-place (preserves order).
+  call reverse(a:list)
+  call filter(a:list, 'count(a:list, v:val) == 1')
+  return reverse(a:list)
+endfunction
+
+function! s:get_classpath_for(search_paths)
+  let jars = []
+  let paths = []
+  for path in a:search_paths
+    " recursive find jars in directory
+    if path =~ ".*\\*\\*\.jar"
+      let path_without_ext = substitute(path, "\\*\\*\.jar", "", "")
+      let jars_in_path = split(system("ag -g \".*\.jar\""), '\n')
+      call extend(jars, jars_in_path)
+    " single jar file
+    elseif path =~ ".*\.jar"
+      call add(jars, path)
+    " directory with .class files
+    else
+      call add(paths, path)
+    endif
+  endfor
+  return [jars, paths]
+endfunction
+
+func! s:to_fqcn(path)
+  let submodule_name = substitute(a:path, "\\$", ".", "g")
+  let trim_ext = substitute(submodule_name, "\.class", "", "g")
+  let fqcn = substitute(trim_ext, "\/", ".", "g")
+  return fqcn
+endfunc
+
+func! s:get_candidates_for(class_name)
+  let search_pattern = "(\\$|/)" . a:class_name . ".class"
+  let search_paths = split(g:java_imports_search_paths, ';')
+
+  let [jars, paths] = s:get_classpath_for(search_paths)
+
+  let candidates = []
+  for path in paths
+    let escaped_path = substitute(path, "\/", "\\\\/", "g")
+    if path !~ ".*/"
+      let escaped_path = escaped_path . "\\/"
+    endif
+    let class_file_paths = split(system("ag -g " . "\"" . search_pattern . "\" \"" . path . "\"" ), '\n')
+    for class_file_path in class_file_paths
+      let without_classpath = substitute(class_file_path, escaped_path, "", "")
+      let fqcn = s:to_fqcn(without_classpath)
+      call add(candidates, fqcn)
+    endfor
+  endfor
+
+  for jar in jars
+    let class_file_paths = split(system("jar tf " . jar . " | ag \"" . search_pattern . "\""), '\n')
+    for class_file_path in class_file_paths
+      let fqcn = s:to_fqcn(class_file_path)
+      call add(candidates, fqcn)
+    endfor
+  endfor
+
+  return s:unique(candidates)
+endfunc
+
+func! s:select_import_candidate(candidates)
+  " create menu with indices
+  let imports_list = ['Select class to import:']
+  for i in range(0, len(a:candidates) - 1)
+    call add(imports_list, (i+1) . ") " . a:candidates[i])
+  endfor
+
+  let idx = inputlist(imports_list)
+
+  " cancelled
+  if idx <= 0
+    return -1
+  endif
+
+  " to list index
+  let idx = idx - 1
+
+  if idx >= len(a:candidates)
+    echo "\nIncorrect selection"
+    return -1
+  endif
+
+  return idx
+endfunc
+
 func! AddImport()
   if !exists("g:java_imports_search_paths")
     echoe "Search paths for imports not configured"
@@ -662,90 +752,50 @@ func! AddImport()
   endif
 
   let word_under_cursor = expand("<cWORD>")
-  " let cmd = "bash ~/dotfiles/scripts/imports.sh" . " " . word_under_cursor . " \"" . g:java_imports_search_paths . "\""
-  " let candidates = split(system(cmd), '\n')
 
-  let search_pattern="(\\$|/)" . word_under_cursor . ".class"
-  let search_path=split(g:java_imports_search_paths, ';')
+  let candidates = s:get_candidates_for(word_under_cursor)
 
-  let jars = []
-  let paths = []
-  for item in search_path
-    if item =~ ".*\\*\\*\.jar"
-      let path_without_ext = substitute(item, "\\*\\*\.jar", "", "")
-      let jars_in_path = split(system("ag -g \".*\.jar\""), '\n')
-      call extend(jars, jars_in_path)
-    elseif item =~ ".*\.jar"
-      call add(jars, item)
+  if empty(candidates)
+    echo "\nNo candidates found for " . word_under_cursor
+    return ''
+  endif
+
+  let idx = s:select_import_candidate(candidates)
+
+  if idx < 0
+    return ''
+  endif
+
+  let selected_candidate_import = "import" . " " . candidates[idx]
+
+  " don't allow duplicate imports
+  call cursor(1, 1)
+  if searchpos("^" . selected_candidate_import, 'nW')[0] != 0
+    echo "\nThis class is already imported"
+    return ''
+  endif
+
+  " add ; for java imports
+  if &ft == 'java'
+    let selected_candidate_import = selected_candidate_import . ";"
+  endif
+
+  " jump to the last line to start searching backwards
+  call cursor(line('$'), 1)
+  " if imports exists, append to the end
+  let last_import_pos = searchpos('^import', 'bW')[0]
+  if last_import_pos != 0
+    call append(last_import_pos, selected_candidate_import)
+  else
+    " if imports not found, try to find package declaration
+    let package_pos = searchpos('^package', 'W')[0]
+    if package_pos != 0
+      call append(package_pos, selected_candidate_import)
     else
-      call add(paths, item)
+      " if package declaration not found, append to the first line
+      call append(0, selected_candidate_import)
     endif
-  endfor
-
-  let result = []
-  for path in paths
-    let escaped_path = substitute(path, "\/", "\\\\/", "g")
-    if path !~ ".*/"
-      let escaped_path = escaped_path . "\\/"
-    endif
-  endfor
-
-  " if empty(candidates)
-  "   echo "\nNo candidates found for " . word_under_cursor
-  "   return ''
-  " endif
-
-  " " create menu with indices
-  " let imports_list = ['Select class to import:']
-  " for i in range(0, len(candidates) - 1)
-  "   call add(imports_list, (i+1) . ") " . candidates[i])
-  " endfor
-
-  " let idx = inputlist(imports_list)
-
-  " " canceled
-  " if idx <= 0
-  "   return ''
-  " endif
-
-  " " to list index
-  " let idx = idx - 1
-
-  " if idx >= len(candidates)
-  "   echo "\nIncorrect selection"
-  "   return ''
-  " endif
-
-  " let selected_candidate = "import" . " " . candidates[idx]
-
-  " " don't allow duplicate imports
-  " call cursor(1, 1)
-  " if searchpos("^" . selected_candidate, 'nW')[0] != 0
-  "   echo "\nThis class is already imported"
-  "   return ''
-  " endif
-
-  " " add ; separator if java
-  " if &ft == 'java'
-  "   let selected_candidate = selected_candidate . ";"
-  " endif
-
-  " " jump to the last line to start searching backwards
-  " call cursor(line('$'), 1)
-  " " if imports exists, append to the end
-  " let last_import_pos = searchpos('^import', 'bW')[0]
-  " if last_import_pos != 0
-  "   call append(last_import_pos, selected_candidate)
-  " else
-  "   " if imports not found, try to find package declaration
-  "   let package_pos = searchpos('^package', 'W')[0]
-  "   if package_pos != 0
-  "     call append(package_pos, selected_candidate)
-  "   else
-  "     " if package declaration not found, append to the first line
-  "     call append(0, selected_candidate)
-  "   endif
-  " endif
+  endif
 
   return ''
 endfunc
