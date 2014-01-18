@@ -694,14 +694,14 @@ func! s:to_fqcn(path)
 endfunc
 
 func! s:get_candidates_for(class_name)
-  let search_pattern = "(\\$|/)" . a:class_name . ".class"
+  let search_pattern = "(\\\\$|/)" . a:class_name . ".class"
   let search_paths = split(g:java_imports_search_paths, ';')
 
   let [jars, paths] = s:get_classpath_for(search_paths)
 
   let candidates = []
   for path in paths
-    let class_file_paths = split(system("ag -g " . "\"" . search_pattern . "\" \"" . path . "\"" ), '\n')
+    let class_file_paths = split(system("ag -u -g " . "\"" . search_pattern . "\" \"" . path . "\"" ), '\n')
     let escaped_path = substitute(path, "\/", "\\\\/", "g")
     " to fully strip classpath from .class path, classpath
     " should end with /
@@ -764,7 +764,7 @@ func! AddImport()
     return ''
   endif
 
-  let word_under_cursor = expand("<cWORD>")
+  let word_under_cursor = expand("<cword>")
 
   let candidates = s:get_candidates_for(word_under_cursor)
 
