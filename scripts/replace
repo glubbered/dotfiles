@@ -1,0 +1,15 @@
+
+<!-- saved from url=(0061)https://raw.github.com/thoughtbot/dotfiles/master/bin/replace -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css"></style></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">#!/bin/sh
+#
+# Find and replace by a given list of files.
+#
+# replace foo bar **/*.rb
+
+find_this=$1
+shift
+replace_with=$1
+shift
+
+ag -l $find_this $* | xargs sed -i '' "s/$find_this/$replace_with/g"
+</pre></body></html>

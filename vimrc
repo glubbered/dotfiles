@@ -653,23 +653,26 @@ colo seoul256
 " }}}
 
 " default
-let g:java_imports_search_paths = "/usr/lib/jvm/java-7-oracle/jre/lib/rt.jar;/home/wedens/Projects/zenith-portal/zenith-portal/lib/**.jar"
+let g:java_imports_search_paths = "/usr/lib/jvm/java-7-oracle/jre/lib/rt.jar"
 
-function! s:unique(list)
-  " Remove duplicate values from the given list in-place (preserves order).
+" Remove duplicate values from the given list in-place (preserves order).
+func! s:unique(list)
   call reverse(a:list)
   call filter(a:list, 'count(a:list, v:val) == 1')
   return reverse(a:list)
-endfunction
+endfunc
 
-function! s:get_classpath_for(search_paths)
+" parse list of paths into list of jars and direct paths.
+" recursive patterns will be expanded into jar files
+func! s:get_classpath_for(search_paths)
   let jars = []
   let paths = []
   for path in a:search_paths
     " recursive find jars in directory
     if path =~ ".*\\*\\*\.jar"
+      "strip **.jar to get pure path
       let path_without_ext = substitute(path, "\\*\\*\.jar", "", "")
-      let jars_in_path = split(system("ag -g \".*\.jar\""), '\n')
+      let jars_in_path = split(system("ag -g \".*\.jar\" \"" . path_without_ext . "\""), '\n')
       call extend(jars, jars_in_path)
     " single jar file
     elseif path =~ ".*\.jar"
@@ -680,8 +683,9 @@ function! s:get_classpath_for(search_paths)
     endif
   endfor
   return [jars, paths]
-endfunction
+endfunc
 
+" convert .class file path to full qualified class name
 func! s:to_fqcn(path)
   let submodule_name = substitute(a:path, "\\$", ".", "g")
   let trim_ext = substitute(submodule_name, "\.class", "", "g")
@@ -697,11 +701,13 @@ func! s:get_candidates_for(class_name)
 
   let candidates = []
   for path in paths
+    let class_file_paths = split(system("ag -g " . "\"" . search_pattern . "\" \"" . path . "\"" ), '\n')
     let escaped_path = substitute(path, "\/", "\\\\/", "g")
+    " to fully strip classpath from .class path, classpath
+    " should end with /
     if path !~ ".*/"
       let escaped_path = escaped_path . "\\/"
     endif
-    let class_file_paths = split(system("ag -g " . "\"" . search_pattern . "\" \"" . path . "\"" ), '\n')
     for class_file_path in class_file_paths
       let without_classpath = substitute(class_file_path, escaped_path, "", "")
       let fqcn = s:to_fqcn(without_classpath)
@@ -710,7 +716,7 @@ func! s:get_candidates_for(class_name)
   endfor
 
   for jar in jars
-    let class_file_paths = split(system("jar tf " . jar . " | ag \"" . search_pattern . "\""), '\n')
+    let class_file_paths = split(system("jar tf \"" . jar . "\" | ag \"" . search_pattern . "\""), '\n')
     for class_file_path in class_file_paths
       let fqcn = s:to_fqcn(class_file_path)
       call add(candidates, fqcn)
@@ -720,6 +726,8 @@ func! s:get_candidates_for(class_name)
   return s:unique(candidates)
 endfunc
 
+" shows menu with found candidates and returns selected index
+" in list of candidates or negative value if error or closed
 func! s:select_import_candidate(candidates)
   " create menu with indices
   let imports_list = ['Select class to import:']
@@ -746,6 +754,11 @@ func! s:select_import_candidate(candidates)
 endfunc
 
 func! AddImport()
+  if !executable('ag')
+    echoe 'ag must be installed in order to use this plugin. Check https://github.com/ggreer/the_silver_searcher for installation instructions.'
+    return ''
+  endif
+
   if !exists("g:java_imports_search_paths")
     echoe "Search paths for imports not configured"
     return ''
@@ -766,36 +779,38 @@ func! AddImport()
     return ''
   endif
 
-  let selected_candidate_import = "import" . " " . candidates[idx]
+  let import_statement = "import" . " " . candidates[idx]
 
   " don't allow duplicate imports
+  " TODO: check wildcard imports
   call cursor(1, 1)
-  if searchpos("^" . selected_candidate_import, 'nW')[0] != 0
+  if searchpos("^" . import_statement, 'nW')[0] != 0
     echo "\nThis class is already imported"
     return ''
   endif
 
   " add ; for java imports
   if &ft == 'java'
-    let selected_candidate_import = selected_candidate_import . ";"
+    let import_statement = selected_candidate_import . ";"
   endif
 
+  " append to the beginning of file if nothing else is found
+  let append_import_to = 0
   " jump to the last line to start searching backwards
   call cursor(line('$'), 1)
-  " if imports exists, append to the end
+  " search for the last import statement
   let last_import_pos = searchpos('^import', 'bW')[0]
   if last_import_pos != 0
-    call append(last_import_pos, selected_candidate_import)
+    let append_import_to = last_import_pos
   else
     " if imports not found, try to find package declaration
     let package_pos = searchpos('^package', 'W')[0]
     if package_pos != 0
-      call append(package_pos, selected_candidate_import)
-    else
-      " if package declaration not found, append to the first line
-      call append(0, selected_candidate_import)
+      let append_import_to = package_pos
     endif
   endif
+
+  call append(append_import_to, import_statement)
 
   return ''
 endfunc

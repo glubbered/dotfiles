@@ -11,8 +11,7 @@ search_path=(${search_path//;/ })
 paths=()
 jars=()
 
-for sp in "${search_path[@]}"
-do
+for sp in "${search_path[@]}"; do
   case $sp in
     *\*.jar)
       globbed_jars=( ${sp}  )
@@ -22,23 +21,17 @@ do
     *) paths=( "${paths[@]}" $sp ) ;;
   esac
 done
-# echo "jars:"
-# printf '%s\n' "${jars[@]}"
-# echo "paths:"
-# printf '%s\n' "${paths[@]}"
 
 RESULT=()
-for p in "${paths[@]}"
-do
+for p in "${paths[@]}"; do
   esc_path=${p//\//\\/}
   esc_path+="\\/"
-  matches=( $(ag -g "$search_for_pattern" "$p" | sed "s/$esc_path//g" | sed "s/\\$/./g" | sed "s/\.class//g" | sed "s/\//\./g") )
+  matches=( $(ag -g "$search_for_pattern" "$p" | sed "s/$esc_path//g ; s/\\$/./g ; s/\.class//g ; s/\//\./g") )
   RESULT=( "${RESULT[@]}" "${matches[@]}" )
 done
 
-for j in "${jars[@]}"
-do
-  matches=( $(jar tf "$j" | ag "$search_for_pattern" | sed "s/\\$/./g" | sed "s/\.class//g" | sed "s/\//\./g")  )
+for j in "${jars[@]}"; do
+  matches=( $(jar tf "$j" | ag "$search_for_pattern" | sed "s/\\$/./g ; s/\.class//g  ; s/\//\./g")  )
   RESULT=( "${RESULT[@]}" "${matches[@]}" )
 done
 
