@@ -28,7 +28,7 @@ alias finddups="find -type f -exec md5sum '{}' ';' | sort | uniq --all-repeated=
 # file info: file name, octal permissions, owner
 alias oct="stat -c '%N %a %U'"
 # list open ports
-alias openports="netstat -an | grep --color -i -E 'listen|listening'"
+alias openports="netstat -anp | grep --color -i -E 'listen|listening'"
 # my ip address
 alias myip="curl ip.appspot.com"
 # Intuitive map function
