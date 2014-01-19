@@ -490,6 +490,12 @@ nnoremap <silent> <CR> :nohlsearch<cr>
 " Yank from the cursor to the end of the line, to be consistent with C and D.
 nnoremap Y y$
 
+" paste in visual mode without updating the default register
+vnoremap p "_dP
+
+" true deletion without updating registers
+nnoremap R "_d
+
 "key mapping for window navigation
 map <C-h> <C-w>h
 map <C-j> <C-w>j
