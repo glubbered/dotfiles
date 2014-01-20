@@ -446,6 +446,9 @@ call unite#filters#sorter_default#use(['sorter_rank'])
 call unite#custom_source('file_rec/async',
       \ 'ignore_pattern', join([
       \ '\.git/',
+      \ 'target/',
+      \ '\.idea/',
+      \ '\.idea_modules/',
       \ ], '\|'))
 " uze fuzzy matching
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
@@ -659,6 +662,18 @@ colo seoul256
 " default
 let g:java_imports_search_paths = "/usr/lib/jvm/java-7-oracle/jre/lib/rt.jar"
 
+func! s:populate_jars_classes_cache(cache_file, jars)
+  let to_fqcn_command = "sed \"s/\\\\$/./g;s/\\.class//g;s/\\//\./g\""
+  for jar in a:jars
+    call system("jar tf \"" . jar . "\" | " . to_fqcn_command . " >> \"" . a:cache_file . "\"")
+  endfor
+  " getftime(cache_filename)
+  " readfile(cache_filename)
+  " writefile(['sdasd'],cache_filename)
+  " localtime()
+  " filereadable(cache_filename)
+endfunc
+
 " Remove duplicate values from the given list in-place (preserves order).
 func! s:unique(list)
   call reverse(a:list)
@@ -697,11 +712,19 @@ func! s:to_fqcn(path)
   return fqcn
 endfunc
 
+func! s:get_candidates_from_cache(cache_file, class_name)
+  let candidates = []
+  let cached_fqcns = readfile(a:cache_file)
+  let candidates = split(system("ag --nogroup --nocolor --no-numbers \".*" . a:class_name . "\\$\" \"" . a:cache_file . "\""), '\n')
+  return candidates
+endfunc
+
 func! s:get_candidates_for(class_name)
   " TODO: unite.vim integration
   " TODO: find candidates in java sources (specified in additional
-  " configuration variable)
+  " configuration variable) ???
   " TODO: ignores
+  " TODO: parse ctags??
   let search_pattern = "(\\\\$|/)" . a:class_name . ".class"
   let search_paths = split(g:java_imports_search_paths, ';')
 
@@ -709,6 +732,7 @@ func! s:get_candidates_for(class_name)
 
   let candidates = []
   for path in paths
+    " TODO: rewrite with sed?
     let class_file_paths = split(system("ag -u -g " . "\"" . search_pattern . "\" \"" . path . "\"" ), '\n')
     " to fully strip classpath from .class path, classpath
     " should end with /
@@ -718,20 +742,20 @@ func! s:get_candidates_for(class_name)
     for class_file_path in class_file_paths
       let without_classpath = substitute(class_file_path, path, "", "")
       let fqcn = s:to_fqcn(without_classpath)
-      " if fqcn =~ "\..*"
-      "   let fqcn = strpart(fqcn, 1)
-      " endif
       call add(candidates, fqcn)
     endfor
   endfor
 
-  for jar in jars
-    let class_file_paths = split(system("jar tf \"" . jar . "\" | ag \"" . search_pattern . "\""), '\n')
-    for class_file_path in class_file_paths
-      let fqcn = s:to_fqcn(class_file_path)
-      call add(candidates, fqcn)
-    endfor
-  endfor
+  if !exists('g:jars_cache_file')
+    let g:jars_cache_file = tempname()
+    call system("touch " . g:jars_cache_file)
+    echo "Populating cache..."
+    call s:populate_jars_classes_cache(g:jars_cache_file, jars)
+    echo "Cache populated"
+  endif
+
+  let candidates_from_cache = s:get_candidates_from_cache(g:jars_cache_file, a:class_name)
+  call extend(candidates, candidates_from_cache)
 
   return s:unique(candidates)
 endfunc
@@ -756,7 +780,7 @@ func! s:select_import_candidate(candidates)
   let idx = idx - 1
 
   if idx >= len(a:candidates)
-    echo "\nIncorrect selection"
+    echohl Error | echo "\nIncorrect selection" | echohl None
     return -1
   endif
 
@@ -780,7 +804,7 @@ func! AddImport()
   let candidates = s:get_candidates_for(word_under_cursor)
 
   if empty(candidates)
-    echo "\nNo candidates found for " . word_under_cursor
+    echohl Error | echo "\nNo candidates found for " . word_under_cursor | echohl None
     return ''
   endif
 
@@ -796,7 +820,7 @@ func! AddImport()
   " TODO: check wildcard imports
   call cursor(1, 1)
   if searchpos("^" . import_statement . ";?$", 'nW')[0] != 0
-    echo "\nThis class is already imported"
+    echohl Error | echo "\nThis class is already imported" | echohl None
     return ''
   endif
 
