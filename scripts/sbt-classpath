@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sbt "show compile:full-classpath" | sed "/List(/!d" | sed "s:Attributed(\\([^) ]*\\))[, ]*:\\1\\n:g;s:.*List(\\([^)]*\\)).*:\\1:g"
