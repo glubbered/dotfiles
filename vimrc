@@ -223,12 +223,17 @@ set formatoptions-=o    "dont continue comments when pushing o/O
 set formatoptions+=j    " delete comment char on second line when joining two commented lines
 set virtualedit=onemore " allow for cursor beyond last character
 set viewoptions=folds,options,cursor,unix,slash " better unix / windows compatibility
+set spr                 " put new split right of the current one
 
 """
 """ Netrw
 """
 " netrw preview in vertical split
-let g:netrw_preview = 1
+let g:netrw_preview = 2
+" change left splitting to right
+let g:netrw_altv=&spr
+" use 75% of window for the new window
+let g:netrw_winsize=75
 
 ""
 "" GUI Settings
@@ -263,7 +268,7 @@ python << EOF
 import os
 import os.path
 
-command = 'ctags --append --exclude=build --exclude=target --exclude=.git --exclude=log --exclude=tmp --extra=+q -R '
+command = 'ctags --append --exclude=build --exclude=target --exclude=.git --exclude=log --exclude=tmp --extra=+q --fields=+l -R '
 if os.path.isfile('tags'):
   print('Generating tags incrementally.')
   # Walk the file tree, if a file has an mtime more recent than the tag file,
@@ -363,24 +368,24 @@ let g:lightline = {
       \ }
 
 function! MyModified()
-  if &filetype == "help"
-    return ""
+  if &filetype == 'help'
+    return ''
   elseif &modified
-    return "+"
+    return '+'
   elseif &modifiable
-    return ""
+    return ''
   else
-    return ""
+    return ''
   endif
 endfunction
 
 function! MyReadonly()
-  if &filetype == "help"
-    return ""
+  if &filetype == 'help'
+    return ''
   elseif &readonly
-    return "⭤"
+    return '⭤'
   else
-    return ""
+    return ''
   endif
 endfunction
 
@@ -416,16 +421,11 @@ let g:user_emmet_leader_key='<C-e>'
 "let g:syntastic_scala_checkers=['fsc']
 
 ""
-"" Airline
-""
-" let g:airline_powerline_fonts = 1
-
-""
 "" YouCompleteMe
 ""
-let g:ycm_add_preview_to_completeopt=0
-let g:ycm_confirm_extra_conf=0
-set completeopt-=preview
+let g:ycm_add_preview_to_completeopt=1
+" read identifiers from tags
+let g:ycm_collect_identifiers_from_tags_files = 1
 
 ""
 "" Unite
@@ -435,7 +435,7 @@ if executable('ag')
   let g:unite_source_grep_command = 'ag'
   let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
   let g:unite_source_grep_recursive_opt = ''
-  let g:unite_source_rec_async_command= 'ag --nocolor --nogroup --hidden -g ""'
+  let g:unite_source_rec_async_command= 'ag --nocolor --nogroup -g ""'
 endif
 let g:unite_force_overwrite_statusline = 0
 " enable yank history
@@ -443,16 +443,14 @@ let g:unite_source_history_yank_enable = 1
 " sort by rank
 call unite#filters#sorter_default#use(['sorter_rank'])
 " ignores
-call unite#custom#source('file_rec/async', 'ignore_pattern', '.*\(\.idea\|\.idea_modules\|target\|\.git\)/.*$')
+call unite#custom_source('file_rec/async',
+      \ 'ignore_pattern', join([
+      \ '\.git/',
+      \ ], '\|'))
 " uze fuzzy matching
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 let g:unite_candidate_icon="▸"
-
-"""
-""" Sneak
-"""
-" behave simillar to easymotion if there are more then 2 matches
-let g:sneak#streak = 1
+let g:unite_source_file_rec_max_cache_files = 0
 
 " }}}
 
@@ -635,7 +633,7 @@ nmap <leader>gp :Git push<CR>
 "" Unite mappings
 ""
 " fuzzy file search. start in insert mode
-nnoremap <C-p> :Unite -start-insert file_rec/async<cr>
+nnoremap <C-p> :Unite -start-insert file_rec/async:!<cr>
 " yank history
 nnoremap <leader>y :<C-u>Unite history/yank<CR>
 " search content
@@ -700,6 +698,10 @@ func! s:to_fqcn(path)
 endfunc
 
 func! s:get_candidates_for(class_name)
+  " TODO: unite.vim integration
+  " TODO: find candidates in java sources (specified in additional
+  " configuration variable)
+  " TODO: ignores
   let search_pattern = "(\\\\$|/)" . a:class_name . ".class"
   let search_paths = split(g:java_imports_search_paths, ';')
 
@@ -708,15 +710,17 @@ func! s:get_candidates_for(class_name)
   let candidates = []
   for path in paths
     let class_file_paths = split(system("ag -u -g " . "\"" . search_pattern . "\" \"" . path . "\"" ), '\n')
-    let escaped_path = substitute(path, "\/", "\\\\/", "g")
     " to fully strip classpath from .class path, classpath
     " should end with /
-    if path !~ ".*/"
-      let escaped_path = escaped_path . "\\/"
+    if path !~ ".*/$"
+      let path = path . "\/"
     endif
     for class_file_path in class_file_paths
-      let without_classpath = substitute(class_file_path, escaped_path, "", "")
+      let without_classpath = substitute(class_file_path, path, "", "")
       let fqcn = s:to_fqcn(without_classpath)
+      " if fqcn =~ "\..*"
+      "   let fqcn = strpart(fqcn, 1)
+      " endif
       call add(candidates, fqcn)
     endfor
   endfor
@@ -760,6 +764,7 @@ func! s:select_import_candidate(candidates)
 endfunc
 
 func! AddImport()
+  " TODO: support for grep if ag isn't installed
   if !executable('ag')
     echoe 'ag must be installed in order to use this plugin. Check https://github.com/ggreer/the_silver_searcher for installation instructions.'
     return ''
@@ -790,14 +795,14 @@ func! AddImport()
   " don't allow duplicate imports
   " TODO: check wildcard imports
   call cursor(1, 1)
-  if searchpos("^" . import_statement, 'nW')[0] != 0
+  if searchpos("^" . import_statement . ";?$", 'nW')[0] != 0
     echo "\nThis class is already imported"
     return ''
   endif
 
   " add ; for java imports
   if &ft == 'java'
-    let import_statement = selected_candidate_import . ";"
+    let import_statement = import_statement . ";"
   endif
 
   " append to the beginning of file if nothing else is found
