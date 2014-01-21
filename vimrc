@@ -667,11 +667,6 @@ func! s:populate_jars_classes_cache(cache_file, jars)
   for jar in a:jars
     call system("jar tf \"" . jar . "\" | " . to_fqcn_command . " >> \"" . a:cache_file . "\"")
   endfor
-  " getftime(cache_filename)
-  " readfile(cache_filename)
-  " writefile(['sdasd'],cache_filename)
-  " localtime()
-  " filereadable(cache_filename)
 endfunc
 
 " Remove duplicate values from the given list in-place (preserves order).
@@ -724,7 +719,6 @@ func! s:get_candidates_for(class_name)
   " TODO: find candidates in java sources (specified in additional
   " configuration variable) ???
   " TODO: ignores
-  " TODO: parse ctags??
   let search_pattern = "(\\\\$|/)" . a:class_name . ".class"
   let search_paths = split(g:java_imports_search_paths, ';')
 
@@ -749,9 +743,9 @@ func! s:get_candidates_for(class_name)
   if !exists('g:jars_cache_file')
     let g:jars_cache_file = tempname()
     call system("touch " . g:jars_cache_file)
-    echo "Populating cache..."
+    echo 'Populating cache...'
     call s:populate_jars_classes_cache(g:jars_cache_file, jars)
-    echo "Cache populated"
+    echo 'Cache populated'
   endif
 
   let candidates_from_cache = s:get_candidates_from_cache(g:jars_cache_file, a:class_name)
@@ -794,12 +788,12 @@ func! AddImport()
     return ''
   endif
 
-  if !exists("g:java_imports_search_paths")
-    echoe "Search paths for imports not configured"
+  if !exists('g:java_imports_search_paths')
+    echoe 'Search paths for imports not configured'
     return ''
   endif
 
-  let word_under_cursor = expand("<cword>")
+  let word_under_cursor = expand('<cword>')
 
   let candidates = s:get_candidates_for(word_under_cursor)
 
@@ -814,10 +808,11 @@ func! AddImport()
     return ''
   endif
 
-  let import_statement = "import" . " " . candidates[idx]
+  let import_statement = 'import' . " " . candidates[idx]
 
   " don't allow duplicate imports
   " TODO: check wildcard imports
+  " TODO: check scala group imports
   call cursor(1, 1)
   if searchpos("^" . import_statement . ";?$", 'nW')[0] != 0
     echohl Error | echo "\nThis class is already imported" | echohl None
@@ -826,7 +821,7 @@ func! AddImport()
 
   " add ; for java imports
   if &ft == 'java'
-    let import_statement = import_statement . ";"
+    let import_statement = import_statement . ';'
   endif
 
   " append to the beginning of file if nothing else is found
@@ -850,3 +845,82 @@ func! AddImport()
   return ''
 endfunc
 inoremap <F10> <C-R>=AddImport()<CR>
+
+func! SquashImports()
+  " TODO: support for multiline group imports
+  " TODO: java wildcard imports
+
+  " dictionary of found packages and classes in import statements
+  let packages = {}
+
+  call cursor(1, 1)
+  " store for later use
+  let first_import_pos = searchpos('^import')[0]
+
+  let import_pos = first_import_pos
+  " repeat while there are any import statement
+  while import_pos > 0
+    let curr_line = getline('.')
+
+    " TODO: combine 3 regexes below with this one?
+    let package = substitute(curr_line, "\\v(.*)\\.(\\{[^\\}]*\}|[a-zA-Z0-9_]*);?$\\V", '\=submatch(1)', "")
+    let group_import = substitute(curr_line, "\\v.*\\{(.*)\\}\\V", '\=submatch(1)', "")
+    " if equals, then group isn't matched
+    " group import
+    if group_import != curr_line
+      " get classes inside group
+      let classes = split(group_import, ", \\?")
+
+      if has_key(packages, package)
+        " append classes from group to other classes in same package
+        call extend(packages[package], classes)
+      else
+        let packages[package] = classes
+      endif
+    " single or wildcard import
+    else
+      let class = substitute(curr_line, "\\v.*\\.\([a-z-A-Z_0-9]*\);?$\\V" , '\=submatch(1)', "")
+      if has_key(packages, package)
+        call add(packages[package], class)
+      else
+        let packages[package] = [class]
+      endif
+    endif
+
+    execute ':' . import_pos . 'd'
+
+    let import_pos = searchpos('^import', 'nc')[0]
+  endwhile
+
+  let import_statements = []
+  for [package, classes] in items(packages)
+    " wildcard imports
+    if len(classes) > 4
+      let wildcard = &ft == 'scala' ? '._' : '.*;'
+      let import_statement = package . wildcard
+      call add(import_statements, import_statement)
+    " multiple classes in same package
+    elseif len(classes) > 1
+      " group import for scala
+      if &ft == 'scala'
+        let import_statement = package . '.{' . join(classes, ', ') . '}'
+        call add(import_statements, import_statement)
+      " multiple single imports for java
+      else
+        for class in classes
+          let import_statement = package . '.' . class . ';'
+          call add(import_statements, import_statement)
+        endfor
+      endif
+    " single import
+    else
+      let ending = &ft == 'scala' ? '' : ';'
+      let import_statement = package . '.' . classes[0] . ending
+      call add(import_statements, import_statement)
+    endif
+  endfor
+
+  " use position of first import as position to insert optimized imports
+  call append(first_import_pos - 1, import_statements)
+endfunc
+command! SquashImports call SquashImports()
