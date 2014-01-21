@@ -863,7 +863,8 @@ func! SquashImports()
     let curr_line = getline('.')
 
     " use ! as separator for matched groups to get all we need in one regex
-    let matches = split(substitute(curr_line, "\\v(.*)\\.(\\{([^\\}]*)\}|\\w*);?$", '\=submatch(1)."!".submatch(2)."!".submatch(3)', ""), '!')
+    let matches = split(substitute(curr_line, "\\v(.*)\\.(\\{([^\\}]*)\}|\\w*);?$",
+          \ '\=submatch(1)."!".submatch(2)."!".submatch(3)', ""), '!')
     let package = matches[0]
     " group import
     if len(matches) == 3
