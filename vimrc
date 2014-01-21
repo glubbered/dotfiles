@@ -862,14 +862,13 @@ func! SquashImports()
   while import_pos > 0
     let curr_line = getline('.')
 
-    " TODO: combine 3 regexes below with this one?
-    let package = substitute(curr_line, "\\v(.*)\\.(\\{[^\\}]*\}|[a-zA-Z0-9_]*);?$\\V", '\=submatch(1)', "")
-    let group_import = substitute(curr_line, "\\v.*\\{(.*)\\}\\V", '\=submatch(1)', "")
-    " if equals, then group isn't matched
+    " use ! as separator for matched groups to get all we need in one regex
+    let matches = split(substitute(curr_line, "\\v(.*)\\.(\\{([^\\}]*)\}|\\w*);?$", '\=submatch(1)."!".submatch(2)."!".submatch(3)', ""), '!')
+    let package = matches[0]
     " group import
-    if group_import != curr_line
+    if len(matches) == 3
       " get classes inside group
-      let classes = split(group_import, ", \\?")
+      let classes = split(matches[2], ", \\?")
 
       if has_key(packages, package)
         " append classes from group to other classes in same package
@@ -879,7 +878,7 @@ func! SquashImports()
       endif
     " single or wildcard import
     else
-      let class = substitute(curr_line, "\\v.*\\.\([a-z-A-Z_0-9]*\);?$\\V" , '\=submatch(1)', "")
+      let class = matches[1]
       if has_key(packages, package)
         call add(packages[package], class)
       else
@@ -896,8 +895,8 @@ func! SquashImports()
   for [package, classes] in items(packages)
     " wildcard imports
     if len(classes) > 4
-      let wildcard = &ft == 'scala' ? '._' : '.*;'
-      let import_statement = package . wildcard
+      let wildcard = &ft == 'scala' ? '_' : '*;'
+      let import_statement = package . '.' . wildcard
       call add(import_statements, import_statement)
     " multiple classes in same package
     elseif len(classes) > 1
