@@ -834,7 +834,7 @@ func! AddImport()
     let append_import_to = last_import_pos
   else
     " if imports not found, try to find package declaration
-    let package_pos = searchpos('^package', 'W')[0]
+    let package_pos = searchpos('^package')[0]
     if package_pos != 0
       let append_import_to = package_pos
     endif
@@ -924,3 +924,34 @@ func! SquashImports()
   call append(first_import_pos - 1, import_statements)
 endfunc
 command! SquashImports call SquashImports()
+
+
+func! FindComplPos()
+    let line = getline('.')
+    let start = col('.')
+    while start > 0 && line[start-1] != "."
+      let start -= 1
+    endwhile
+    return start
+endfunc
+
+func! ScalaCompletion(findstart, base)
+  if a:findstart
+    return FindComplPos()
+  else
+    let curr_line = line('.') - 1
+    let curr_column = FindComplPos()
+
+    let path = expand('%:p')
+    execute ":w"
+    let res = system("curl -s \"http://localhost:8080/completion?file=".path."&line=".curr_line."&column=".curr_column."\"")
+    let res_list = split(res, ';')
+    let candidates = []
+    for res in res_list
+      if res =~ '^' . a:base
+        call add(candidates, res)
+      endif
+    endfor
+    return candidates
+  endif
+endfun
