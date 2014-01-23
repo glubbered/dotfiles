@@ -1,5 +1,5 @@
 " VUNDLE {{{
-set nocompatible
+" set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
@@ -105,7 +105,7 @@ set noerrorbells
 set novisualbell
 set encoding=utf-8    " Set default encoding to UTF-8
 filetype plugin on    " load ftplugins
-filetype indent on    " load indent files
+filetype indent on    " load filetype-specific indent files
 set hidden            " allow buffer switching without saving
 set history=1000      " store commands history
 set autoread          " auto read when a file is change from the outside
@@ -132,7 +132,8 @@ set matchpairs+=<:>   " specially for html
 set mat=2             " How many tenths of a second to blink when matching brackets
 set cursorline        " highlight current line
 set shortmess+=I      " don't display welcome
-syntax enable         " Turn on syntax highlighting allowing local overrides
+syntax enable         " enable syntax processing
+set synmaxcol=800     " don't try to highligh very long lines
 " Use nicer representations when showing invisible characters.
 set listchars=""
 set listchars+=tab:\▸\ ,trail:·,extends:»,precedes:«
@@ -146,10 +147,9 @@ set lazyredraw        " only redraws if it is needed
 ""
 "" Whitespace and indentation
 ""
-"set nowrap                        " don't wrap lines
-set tabstop=2                     " a tab is two spaces
+set tabstop=2                     " number of visual spaces per TAB
 set shiftwidth=2                  " an autoindent (with <<) is two spaces
-set softtabstop=2
+set softtabstop=2                 " number of spaces in tab when editing
 set expandtab                     " use spaces, not tabs
 set smarttab                      " Use shift-width for tabbing. Ignore tabstop & softtabstop.
 set list                          " Show invisible characters
@@ -161,7 +161,7 @@ set textwidth=0                   " don't wrap long lines
 "" Searching
 ""
 set hlsearch    " highlight matches
-set incsearch   " incremental searching
+set incsearch   " search as characters are entered
 set ignorecase  " searches are case insensitive...
 set smartcase   " ... unless they contain at least one capital letter
 set tags=tags;/
@@ -192,9 +192,10 @@ endif
 ""
 "" Folding
 ""
-set foldmethod=marker   "detect triple-{ style fold markers
-set foldnestmax=3       "deepest fold is 3 levels
-set nofoldenable        "dont fold by default
+set foldmethod=marker   " detect triple-{ style fold markers
+set foldenable          " enable folding
+set foldlevelstart=10   " open most folds by default
+set foldnestmax=3       " 10 nested fold max
 set foldopen=block,hor,insert,jump,mark,percent,quickfix,search,tag,undo "which commands trigger auto-unfold
 
 ""
@@ -221,7 +222,9 @@ set wildignore+=.DS_Store
 ""
 set formatoptions-=o    "dont continue comments when pushing o/O
 set formatoptions+=j    " delete comment char on second line when joining two commented lines
+set nojoinspaces        " prevents inserting two spaces after punctuation on a join (J)
 set virtualedit=onemore " allow for cursor beyond last character
+set whichwrap=b,s,h,l,<,>,[,] " allow to move to the previous line by left/right
 set viewoptions=folds,options,cursor,unix,slash " better unix / windows compatibility
 set spr                 " put new split right of the current one
 
@@ -471,7 +474,7 @@ vnoremap / /\v
 " (it will prompt for sudo password when writing)
 cmap w!! %!sudo tee > /dev/null %
 
-" Treat long lines as break lines (useful when moving around in them)
+" move vertically by visual line (not real ones)
 map j gj
 map k gk
 
@@ -483,9 +486,7 @@ imap <silent> <F4> <ESC>:set invpaste<CR>:set paste?<CR>
 map <C-c> "+y
 map <Insert> :set paste<CR>"+p:set nopaste<CR>
 
-" Toggle hlsearch with <leader>hs
-nmap <leader>hs :set hlsearch! hlsearch?<CR>
-" and with enter
+" turn off search highlight
 nnoremap <silent> <CR> :nohlsearch<cr>
 
 " Yank from the cursor to the end of the line, to be consistent with C and D.
@@ -945,13 +946,15 @@ func! ScalaCompletion(findstart, base)
     let path = expand('%:p')
     execute ":w"
     let res = system("curl -s \"http://localhost:8080/completion?file=".path."&line=".curr_line."&column=".curr_column."\"")
-    let res_list = split(res, ';')
+    let res_list = eval(res)
     let candidates = []
-    for res in res_list
-      if res =~ '^' . a:base
-        call add(candidates, res)
+    for c in res_list
+      if c['word'] =~ '^' . a:base
+        call add(candidates, c)
       endif
     endfor
     return candidates
   endif
 endfun
+
+" vim:foldmethod=marker:foldlevel=0
