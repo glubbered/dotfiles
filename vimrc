@@ -941,20 +941,25 @@ func! ScalaCompletion(findstart, base)
     return FindComplPos()
   else
     let curr_line = line('.') - 1
-    let curr_column = FindComplPos()
+    let curr_column = FindComplPos() - 1
 
     let path = expand('%:p')
     execute ":w"
-    let res = system("curl -s \"http://localhost:8080/completion?file=".path."&line=".curr_line."&column=".curr_column."\"")
+    let curl_cmd = "curl -s \"http://localhost:8080/completion?file=".path."&line=".curr_line."&column=".curr_column
+    if a:base !~ "^\\s*$"
+      let curl_cmd = curl_cmd."&prefix=".a:base
+    endif
+    let curl_cmd = curl_cmd."\""
+    let res = system(curl_cmd)
     let res_list = eval(res)
-    let candidates = []
-    for c in res_list
-      if c['word'] =~ '^' . a:base
-        call add(candidates, c)
-      endif
-    endfor
-    return candidates
+    return res_list
   endif
 endfun
+
+" java setter
+nmap <leader>js $b"nyiw~"cyiw~bb"tyiwA<CR>public void set<ESC>"cpA(<ESC>"tpa <ESC>"npA {<CR>this.<ESC>"npA = <ESC>"npA;<ESC>
+"java getter
+nmap <leader>jg $b"nyiw~"cyiw~bb"tyiwopublic <ESC>"tpa get<ESC>"cpA(<ESC>A {<CR>return <ESC>"npA;<ESC>
+
 
 " vim:foldmethod=marker:foldlevel=0
