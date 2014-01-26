@@ -927,34 +927,76 @@ endfunc
 command! SquashImports call SquashImports()
 
 
-func! FindComplPos()
+" func! FindComplPos()
+"     let line = getline('.')
+"     let start = col('.')
+"     while start > 0 && line[start-1] != "."
+"       let start -= 1
+"     endwhile
+"     return start
+" endfunc
+
+func! FindPos()
     let line = getline('.')
-    let start = col('.')
-    while start > 0 && line[start-1] != "."
-      let start -= 1
+    let pos = col('.') - 1
+    let scope = 1
+    while pos > 1
+      if (line[pos-1] == " " || line[pos-1] == ".") && line[pos-2] =~ "\\v(\\w|}|\\)|\\])"
+        let scope = 0
+        break
+      " elseif line[pos-1] =~ "\\v(\\s|\\{|\\()"
+      elseif line[pos-1] !~ "\\v(\\w|}|\\)|\\])"
+        break
+      endif
+
+      let pos -= 1
     endwhile
-    return start
+    return [scope, pos]
 endfunc
 
 func! ScalaCompletion(findstart, base)
   if a:findstart
-    return FindComplPos()
+    return FindPos()[1]
   else
-    let curr_line = line('.') - 1
-    let curr_column = FindComplPos() - 1
+    let line = line('.') - 1 " to number from 0
+    let [compl_mode, column] = FindPos()
+    let column = column - 1 " to number from 0
 
     let path = expand('%:p')
-    execute ":w"
-    let curl_cmd = "curl -s \"http://localhost:8080/completion?file=".path."&line=".curr_line."&column=".curr_column
+    " execute ":w"
+    let mode_name = "completion"
+    if compl_mode == 1
+      let mode_name = "scope-completion"
+    endif
+    let curl_cmd = "curl -s \"http://localhost:8080/".mode_name."?file=".path."&line=".line."&column=".column
     if a:base !~ "^\\s*$"
       let curl_cmd = curl_cmd."&prefix=".a:base
     endif
+    let curl_cmd = curl_cmd."&line_content=".Encode(getline('.'))
     let curl_cmd = curl_cmd."\""
     let res = system(curl_cmd)
     let res_list = eval(res)
     return res_list
   endif
 endfun
+" Encode a single character.
+function! EncodeChar(char)
+    if a:char == '%'
+        return '%%'
+    elseif a:char == ' '
+        return '+'
+    else
+        return printf("%%%X", char2nr(a:char))
+    endif
+endf
+
+
+" Encode an URL.
+function! Encode(url)
+    let rx = '\([^a-zA-Z0-9_.-]\)'
+    let rv = substitute(a:url, rx, '\=EncodeChar(submatch(1))', 'g')
+    return rv
+endf
 
 " java setter
 nmap <leader>js $b"nyiw~"cyiw~bb"tyiwA<CR>public void set<ESC>"cpA(<ESC>"tpa <ESC>"npA {<CR>this.<ESC>"npA = <ESC>"npA;<ESC>
