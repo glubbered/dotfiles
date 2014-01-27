@@ -926,59 +926,76 @@ func! SquashImports()
 endfunc
 command! SquashImports call SquashImports()
 
-
-" func! FindComplPos()
-"     let line = getline('.')
-"     let start = col('.')
-"     while start > 0 && line[start-1] != "."
-"       let start -= 1
-"     endwhile
-"     return start
-" endfunc
-
 func! FindPos()
     let line = getline('.')
     let pos = col('.') - 1
     let scope = 1
     while pos > 1
-      if (line[pos-1] == " " || line[pos-1] == ".") && line[pos-2] =~ "\\v(\\w|}|\\)|\\])"
+      " type completion with dot after empty string:
+      " Seq(1,2,3)
+      "   .{completion}
+      if strpart(line, 0, pos) =~ "\\v^\\s*\\.$"
         let scope = 0
         break
-      " elseif line[pos-1] =~ "\\v(\\s|\\{|\\()"
+      " scope completion after new:
+      " val x = new {completion}
+      " val s = x.f(new {completion})
+      elseif pos > 4 && strpart(line, pos-4, 5) =~ "\\v((\\w)+)\@<!new\\s"
+        break
+      " type completion after space and dot in general:
+      " f().{completion}
+      " t[T].{completion}
+      " x {completion}
+      " x.map { .. }.{completion}
+      " x.map { .. } {completion}
+      elseif (line[pos-1] == " " || line[pos-1] == ".") && line[pos-2] =~ "\\v(\\w|}|\\)|\\])"
+        let scope = 0
+        break
+      " scope completion in other cases
       elseif line[pos-1] !~ "\\v(\\w|}|\\)|\\])"
         break
       endif
 
       let pos -= 1
     endwhile
+    " TODO
+    if pos == 0
+      let pos = 1 " it's first column!
+    endif
     return [scope, pos]
 endfunc
 
+let g:tmp_file = "/tmp/sc_buff"
+
 func! ScalaCompletion(findstart, base)
   if a:findstart
+    exe  "w! ".g:tmp_file
     return FindPos()[1]
   else
     let line = line('.') - 1 " to number from 0
     let [compl_mode, column] = FindPos()
-    let column = column - 1 " to number from 0
+    if column != 0
+      let column = column - 1 " to number from 0
+    endif
 
-    let path = expand('%:p')
-    " execute ":w"
+    let current_file_name = expand('%:p')
+    let path = g:tmp_file
     let mode_name = "completion"
     if compl_mode == 1
       let mode_name = "scope-completion"
     endif
-    let curl_cmd = "curl -s \"http://localhost:8080/".mode_name."?file=".path."&line=".line."&column=".column
+    let curl_cmd = "curl -s -m 20 \"http://localhost:8080/".mode_name."?file=".path."&line=".line."&column=".column."&current_file_name=".Encode(current_file_name)
     if a:base !~ "^\\s*$"
       let curl_cmd = curl_cmd."&prefix=".a:base
     endif
-    let curl_cmd = curl_cmd."&line_content=".Encode(getline('.'))
     let curl_cmd = curl_cmd."\""
     let res = system(curl_cmd)
+    echom res
     let res_list = eval(res)
     return res_list
   endif
 endfun
+
 " Encode a single character.
 function! EncodeChar(char)
     if a:char == '%'
@@ -993,10 +1010,12 @@ endf
 
 " Encode an URL.
 function! Encode(url)
-    let rx = '\([^a-zA-Z0-9_.-]\)'
-    let rv = substitute(a:url, rx, '\=EncodeChar(submatch(1))', 'g')
+    let rx = '\\([^a-zA-Z0-9_.-]\\)'
+    let rv = substitute(a:url, rx, '\\=EncodeChar(submatch(1))', 'g')
     return rv
 endf
+
+
 
 " java setter
 nmap <leader>js $b"nyiw~"cyiw~bb"tyiwA<CR>public void set<ESC>"cpA(<ESC>"tpa <ESC>"npA {<CR>this.<ESC>"npA = <ESC>"npA;<ESC>
