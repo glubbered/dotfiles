@@ -965,11 +965,31 @@ func! FindPos()
     return [scope, pos]
 endfunc
 
+let g:scala_completion_classpath = []
+let g:scala_completion_src_dirs = []
+
 let g:tmp_file = "/tmp/sc_buff"
+let g:scala_completion_initialized = 0
+
+" TODO: what if server went down?
+" TODO: what if server were already initialized?
+func! InitScalaCompletion()
+  let classpath_str = Encode(join(g:scala_completion_classpath, ";"))
+  let src_dirs_str = Encode(join(g:scala_completion_src_dirs, ";"))
+  let curl_cmd = "curl -s -m 60 -d \"classpath=".classpath_str."&src_dirs=".src_dirs_str."\" \"http://localhost:8085/init\""
+  let res = system(curl_cmd)
+  if res != "success"
+    echom "Error occured during scala completion initialization. Response: ".res
+  endif
+  let g:scala_completion_initialized = 1
+endfunc
 
 func! ScalaCompletion(findstart, base)
+  if g:scala_completion_initialized != 1
+    call InitScalaCompletion()
+  endif
   if a:findstart
-    exe  "w! ".g:tmp_file
+    exe "w! ".g:tmp_file
     return FindPos()[1]
   else
     let line = line('.') - 1 " to number from 0
@@ -984,15 +1004,19 @@ func! ScalaCompletion(findstart, base)
     if compl_mode == 1
       let mode_name = "scope-completion"
     endif
-    let curl_cmd = "curl -s -m 20 \"http://localhost:8080/".mode_name."?file=".path."&line=".line."&column=".column."&current_file_name=".Encode(current_file_name)
+    let curl_cmd = "curl -s -m 30 \"http://localhost:8085/".mode_name."?file=".path."&line=".line."&column=".column."&current_file_name=".Encode(current_file_name)
     if a:base !~ "^\\s*$"
       let curl_cmd = curl_cmd."&prefix=".a:base
     endif
     let curl_cmd = curl_cmd."\""
     let res = system(curl_cmd)
-    echom res
-    let res_list = eval(res)
-    return res_list
+    try
+      let res_list = eval(res)
+      return res_list
+    catch
+      echom "Scala completion failed: ".res
+    endtry
+    return []
   endif
 endfun
 
@@ -1007,7 +1031,6 @@ function! EncodeChar(char)
     endif
 endf
 
-
 " Encode an URL.
 function! Encode(url)
     let rx = '\\([^a-zA-Z0-9_.-]\\)'
@@ -1015,7 +1038,7 @@ function! Encode(url)
     return rv
 endf
 
-
+autocmd FileType scala setlocal omnifunc=ScalaCompletion
 
 " java setter
 nmap <leader>js $b"nyiw~"cyiw~bb"tyiwA<CR>public void set<ESC>"cpA(<ESC>"tpa <ESC>"npA {<CR>this.<ESC>"npA = <ESC>"npA;<ESC>
