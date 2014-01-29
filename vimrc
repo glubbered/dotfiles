@@ -242,15 +242,10 @@ let g:netrw_winsize=75
 "" GUI Settings
 ""
 if has('gui_running')
-  set guioptions-=T " remove the toolbar
-
-  " disable cursor blink
-  set guicursor+=a:blinkon0
-  " Disable scrollbars
-  set guioptions-=r
-  set guioptions-=R
-  set guioptions-=l
-  set guioptions-=L
+  set guioptions-=T               " Remove GUI toolbar
+  set guioptions-=e               " Use text tab bar, not GUI
+  set guioptions-=rL              " Remove scrollbars
+  set guicursor=a:blinkon0        " Turn off the blinking cursor
 
   set lines=40
   "set guifont=Source\ Code\ Pro\ for\ Powerline\ 14
@@ -351,6 +346,9 @@ autocmd BufNewFile,BufRead *.scss   ft=scss.css
 " set indentation to 4 spaces in java sources
 autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
 
+" comment string for tmux configs
+autocmd FileType tmux set commentstring=#\ %s
+
 " }}}
 
 " PLUGINS SETTINGS {{{
@@ -428,7 +426,7 @@ let g:user_emmet_leader_key='<C-e>'
 ""
 let g:ycm_add_preview_to_completeopt=1
 " read identifiers from tags
-let g:ycm_collect_identifiers_from_tags_files = 1
+" let g:ycm_collect_identifiers_from_tags_files = 1
 
 ""
 "" Unite
@@ -1041,9 +1039,11 @@ endf
 autocmd FileType scala setlocal omnifunc=ScalaCompletion
 
 " java setter
-nmap <leader>js $b"nyiw~"cyiw~bb"tyiwA<CR>public void set<ESC>"cpA(<ESC>"tpa <ESC>"npA {<CR>this.<ESC>"npA = <ESC>"npA;<ESC>
+" nmap <leader>js $b"nyiw~"cyiw~bb"tyiwA<CR>public void set<ESC>"cpA(<ESC>"tpa <ESC>"npA {<CR>this.<ESC>"npA = <ESC>"npA;<ESC>
 "java getter
-nmap <leader>jg $b"nyiw~"cyiw~bb"tyiwopublic <ESC>"tpa get<ESC>"cpA(<ESC>A {<CR>return <ESC>"npA;<ESC>
+" nmap <leader>jg $b"nyiw~"cyiw~bb"tyiwopublic <ESC>"tpa get<ESC>"cpA(<ESC>A {<CR>return <ESC>"npA;<ESC>
 
+" generate public java getter and setter for field under cursor
+nmap <leader>jgs $b"nyiw~"cyiw~bbvT "tyopublic void set<ESC>"cpA(<ESC>"tpa <ESC>"npA {<CR>this.<ESC>"npA = <ESC>"npA;<ESC>jo<CR>public <ESC>"tpA get<ESC>"cpA() {<CR>return <ESC>"npA;<ESC>
 
 " vim:foldmethod=marker:foldlevel=0
