@@ -582,6 +582,11 @@ nnoremap <Leader>`` :qa!<cr>
 " Make the current directory
 nmap <leader>md :silent !mkdir -p %:h<CR>:redraw!<CR>
 
+" Open tag selection prompt for tag under cursor and open in preview window
+nmap g<C-[> :exe "ptjump /\\c".expand('<cword>')<Esc>
+" standart action with case sensitivity
+nmap g<C-]> :exe "tjump /\\c".expand('<cword>')<Esc>
+
 " Quickly switch between two most common white-space set-ups.
 noremap <leader>2 :set ts=2 sts=2 sw=2 expandtab<cr>
 noremap <leader>4 :set ts=4 sts=4 sw=4 expandtab<cr>
@@ -635,7 +640,7 @@ nmap <leader>gp :Git push<CR>
 "" Unite mappings
 ""
 " fuzzy file search. start in insert mode
-nnoremap <C-p> :Unite -start-insert file_rec/async:!<cr>
+nnoremap <C-p> :Unite -start-insert file_rec/async<cr>
 " yank history
 nnoremap <leader>y :<C-u>Unite history/yank<CR>
 " search content
