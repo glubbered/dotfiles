@@ -1,5 +1,6 @@
 " VUNDLE {{{
-" set nocompatible
+scriptencoding utf-8
+set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
@@ -92,8 +93,7 @@ endif
 
 " BASIC {{{
 
-let mapleader = ","  " leader key
-let g:mapleader=","
+let g:mapleader=","   " leader key
 set nocompatible      " Use vim, no vi defaults
 
 ""
@@ -140,7 +140,7 @@ set listchars+=tab:\▸\ ,trail:·,extends:»,precedes:«
 set fillchars+=vert:│ " better looking for windows separator (only in terminal vim)
 set showbreak=↪
 " Don't render tag contents with bold, italic & underline in HTML.
-let html_no_rendering=1
+let g:html_no_rendering=1
 set lazyredraw        " only redraws if it is needed
 
 
@@ -466,7 +466,7 @@ inoremap kj <Esc>
 
 " sane regexes
 nnoremap / /\v
-vnoremap / /\v
+xnoremap / /\v
 
 " use :w!! to write to a file using sudo if you forgot to 'sudo vim file'
 " (it will prompt for sudo password when writing)
@@ -491,7 +491,7 @@ nnoremap <silent> <CR> :nohlsearch<cr>
 nnoremap Y y$
 
 " paste in visual mode without updating the default register
-vnoremap p "_dP
+xnoremap p "_dP
 
 " true deletion without updating registers
 nnoremap R "_d
@@ -501,8 +501,6 @@ map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
-" next window
-map <Tab> <C-w>w
 
 " buffer cycling
 map <F2> :bprevious<CR>
@@ -528,8 +526,8 @@ nnoremap <leader>d :Bclose<CR>
 nmap <leader>p :Explore<CR>
 
 " Do not lost block selection after indentation
-vmap > >gv
-vmap < <gv
+xmap > >gv
+xmap < <gv
 
 " go to last edit location with ,.
 nnoremap ,. '.
@@ -542,7 +540,7 @@ map ,hi :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 
 " Folding
 nnoremap <Space> za
-vnoremap <Space> za
+xnoremap <Space> za
 
 " Reselect text that was just pasted with ,v
 nnoremap <leader>v V`]
@@ -564,6 +562,8 @@ noremap <Leader>tm :tabmove<CR>
 noremap <Leader>tn :tabnext<CR>
 " Easily go to previous tab.
 noremap <Leader>tp :tabprevious<CR>
+" Edit current buffer in new tab
+nnoremap <Leader>te :tabedit %<CR>
 
 " shift key typos fixes
 command! -bang -nargs=* -complete=file E e<bang> <args>
@@ -595,34 +595,34 @@ noremap <leader>4 :set ts=4 sts=4 sw=4 expandtab<cr>
 ""
 " ,# Surround a word with #{ruby interpolation}
 map ,# ysiw#
-vmap ,# c#{<C-R>"}<ESC>
+xmap ,# c#{<C-R>"}<ESC>
 
 " ," Surround a word with "quotes"
 map ," ysiw"
-vmap ," c"<C-R>""<ESC>
+xmap ," c"<C-R>""<ESC>
 
 " ,' Surround a word with 'single quotes'
 map ,' ysiw'
-vmap ,' c'<C-R>"'<ESC>
+xmap ,' c'<C-R>"'<ESC>
 
 " ,) or ,( Surround a word with (parens)
 " The difference is in whether a space is put in
 map ,( ysiw(
 map ,) ysiw)
-vmap ,( c( <C-R>" )<ESC>
-vmap ,) c(<C-R>")<ESC>
+xmap ,( c( <C-R>" )<ESC>
+xmap ,) c(<C-R>")<ESC>
 
 " ,[ Surround a word with [brackets]
 map ,] ysiw]
 map ,[ ysiw[
-vmap ,[ c[ <C-R>" ]<ESC>
-vmap ,] c[<C-R>"]<ESC>
+xmap ,[ c[ <C-R>" ]<ESC>
+xmap ,] c[<C-R>"]<ESC>
 
 " ,{ Surround a word with {braces}
 map ,} ysiw}
 map ,{ ysiw{
-vmap ,} c{ <C-R>" }<ESC>
-vmap ,{ c{<C-R>"}<ESC>
+xmap ,} c{ <C-R>" }<ESC>
+xmap ,{ c{<C-R>"}<ESC>
 
 ""
 "" Fugitive mappings
@@ -657,6 +657,8 @@ let g:seoul256_background = 234
 colo seoul256
 
 " }}}
+
+" Imports {{{
 
 " default
 let g:java_imports_search_paths = "/usr/lib/jvm/java-7-oracle/jre/lib/rt.jar"
@@ -708,7 +710,6 @@ endfunc
 
 func! s:get_candidates_from_cache(cache_file, class_name)
   let candidates = []
-  let cached_fqcns = readfile(a:cache_file)
   let candidates = split(system("ag --nogroup --nocolor --no-numbers \".*" . a:class_name . "\\$\" \"" . a:cache_file . "\""), '\n')
   return candidates
 endfunc
@@ -924,6 +925,9 @@ func! SquashImports()
 endfunc
 command! SquashImports call SquashImports()
 
+" }}}
+
+" Scala completion {{{
 func! FindPos()
     let line = getline('.')
     let pos = col('.') - 1
