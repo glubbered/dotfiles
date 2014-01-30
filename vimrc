@@ -1038,12 +1038,13 @@ endf
 
 autocmd FileType scala setlocal omnifunc=ScalaCompletion
 
-" java setter
-" nmap <leader>js $b"nyiw~"cyiw~bb"tyiwA<CR>public void set<ESC>"cpA(<ESC>"tpa <ESC>"npA {<CR>this.<ESC>"npA = <ESC>"npA;<ESC>
-"java getter
-" nmap <leader>jg $b"nyiw~"cyiw~bb"tyiwopublic <ESC>"tpa get<ESC>"cpA(<ESC>A {<CR>return <ESC>"npA;<ESC>
+" }}}
 
 " generate public java getter and setter for field under cursor
 nmap <leader>jgs $b"nyiw~"cyiw~bbvT "tyopublic void set<ESC>"cpA(<ESC>"tpa <ESC>"npA {<CR>this.<ESC>"npA = <ESC>"npA;<ESC>jo<CR>public <ESC>"tpA get<ESC>"cpA() {<CR>return <ESC>"npA;<ESC>
+
+if filereadable(expand('~/.vimrc.afterall.local'))
+  source ~/.vimrc.afterall.local
+endif
 
 " vim:foldmethod=marker:foldlevel=0
