@@ -6,6 +6,7 @@ ln -sfn ~/dotfiles/vimrc ~/.vimrc
 ln -sfn ~/dotfiles/vim ~/.vim
 ln -sfn ~/dotfiles/ctags ~/.ctags
 ln -sfn ~/dotfiles/tigrc ~/.tigrc
+ln -sfn ~/dotfiles/newsbeuter.conf ~/.newsbeuter.conf
 
 ln -sfn ~/dotfiles/zprezto ~/.zprezto
 ln -sfn ~/dotfiles/zlogin ~/.zlogin

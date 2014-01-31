@@ -16,6 +16,8 @@ export KEYTIMEOUT=1
 
 # run tmux in color mode
 alias tmux='tmux -2'
+# run newsbeuter with correct paths
+alias newsbeuter='newsbeuter -C ~/.newsbeuter.conf -u ~/yandex/newsbeuter/urls'
 # Enhanced WHOIS lookups
 alias whois="whois -h whois-servers.net"
 # View HTTP traffic
