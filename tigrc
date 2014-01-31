@@ -1,0 +1,12 @@
+set show-date = relative
+set show-rev-graph = yes
+set line-graphics = utf-8
+
+bind generic F !git fetch
+bind main R !?git reset --hard %(commit)
+bind main P !?git push
+bind main g move-first-line
+bind main G move-last-line
+bind diff g move-first-line
+bind diff G move-last-line
+# vim: ft=muttrc
