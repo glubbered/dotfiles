@@ -82,7 +82,6 @@ Bundle 'itchyny/lightline.vim'
 
 " color schemes
 Bundle 'nanotech/jellybeans.vim'
-Bundle 'morhetz/gruvbox'
 Bundle 'junegunn/seoul256.vim'
 
 if filereadable(expand('~/.vimrc.bundles.local'))
@@ -654,9 +653,6 @@ nnoremap <leader>t :GenerateTagsIncrementally<CR>:Unite -start-insert tag<CR>
 
 " COLOR SCHEME {{{
 
-if !has('gui_running')
-  set t_Co=256          " enable 256-color mode.
-endif
 set background=dark   " assume a dark background
 let g:seoul256_background = 234
 colo seoul256
