@@ -1,18 +1,18 @@
-#
-# Executes commands at the start of an interactive session.
-#
-# Authors:
-#   Sorin Ionescu <sorin.ionescu@gmail.com>
-#
-
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
-
 # filetype highlighting
 eval `dircolors -b ~/dotfiles/dircolors`
+
+# consistent terminfo
+export TERM=screen-256color
+
+# faster switching between vi modes
+export KEYTIMEOUT=1
+
+# Aliases {{{
 
 # run tmux in color mode
 alias tmux='tmux -2'
@@ -31,10 +31,32 @@ alias oct="stat -c '%N %a %U'"
 alias openports="netstat -anp | grep --color -i -E 'listen|listening'"
 # my ip address
 alias myip="curl ip.appspot.com"
+# local ip address
+alias mylocalip="ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print \$1}'"
 # Intuitive map function
 # For example, to list all directories that contain a certain file:
 # find . -name .gitattributes | map dirname
 alias map="xargs -n1"
+# more readable $PATH
+alias path='echo -e ${PATH//:/\\n}'
+# top 10 memory usage
+alias topmem='ps -e -orss=,args= | sort -b -k1,1n| head -10'
+# top 10 cpu usage
+alias topcpu='ps -e -o pcpu,cpu,nice,state,cputime,args|sort -k1 -nr | head -10'
+# vimrc editing
+alias ve='vim ~/.vimrc'
+
+# }}}
+
+# Functions {{{
+
+# Terminal colors list in tmux format
+
+function tmuxcolors() {
+  for i in {0..255} ; do
+    printf "\x1b[38;5;${i}mcolour${i}\n"
+  done
+}
 
 # Start an HTTP server from a directory, optionally specifying the port
 function server() {
@@ -117,9 +139,6 @@ function fs() {
   fi
 }
 
-# Top ten memory hogs
-memtop() {ps -eorss,args | sort -nr | pr -TW$COLUMNS | head}
-
 # List of installed packages excluding default
 function installed_packages() {
   sudo aptitude search '~i !~M' -F '%p' | sed 's/[ \t]*$//' | sort -u > /tmp/currentlyinstalled.txt
@@ -127,13 +146,22 @@ function installed_packages() {
   comm -23 /tmp/currentlyinstalled.txt /tmp/defaultinstalled.txt
 }
 
+# Kills any process that matches a regexp passed to it
+killit() {
+    ps aux | grep -v "grep" | grep "$@" | awk '{print $2}' | xargs sudo kill
+}
+
+# }}}
+
 # history search
-bindkey '^R' history-incremental-search-backward
-bindkey '^S' history-incremental-search-forward
-bindkey '^P' history-search-backward
-bindkey '^N' history-search-forward
+# bindkey '^R' history-incremental-search-backward
+# bindkey '^S' history-incremental-search-forward
+# bindkey '^P' history-search-backward
+# bindkey '^N' history-search-forward
 
 if [ -f ~/.zshrc.local ]
 then
   source ~/.zshrc.local
 fi
+
+# vim: foldlevel=0
