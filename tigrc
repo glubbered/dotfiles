@@ -3,6 +3,7 @@ set show-rev-graph = yes
 set line-graphics = utf-8
 
 bind generic F !git fetch
+bind generic + !git commit --amend
 bind main R !?git reset --hard %(commit)
 bind main P !?git push
 bind main g move-first-line
