@@ -1,0 +1,15 @@
+# load mailboxes list
+source ~/.mutt/mailboxes
+
+# default mailbox
+set spoolfile = "+Gmail/[gmail].inbox"
+
+# default account
+source ~/.mutt/accounts/gmail
+
+# switch to account
+folder-hook Gmail/* source ~/.mutt/accounts/gmail
+folder-hook Yandex/* source ~/.mutt/accounts/yandex
+folder-hook . 'unset trash'
+
+# vim:ft=muttrc

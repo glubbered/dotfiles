@@ -1,0 +1,87 @@
+# editor is used by mutt
+set editor = "vim +:silent+?^$"
+set charset="utf-8"
+set send_charset="utf-8"
+# delete without prompting
+set delete
+# skip initial prompt when replying
+set fast_reply
+# reply as whomever it was to
+set reverse_name
+# dashes before sig
+set sig_dashes
+# location of mailboxes
+set folder = ~/Mail
+# default mailbox type when creating new folder
+set mbox_type = Maildir
+# format for subject when forwarding
+set forward_format = "Fwd: %s"
+# decode when forwarding
+set forward_decode
+# quote email body when forwarding
+set forward_quote
+# copy of the message you are replying to is included in your reply
+set include
+#
+set mail_check = 0
+# don't mark messages as old, when leaving mailbox
+unset mark_old
+# don't show wrap markers
+unset markers
+# sort threads by received date
+set sort=threads
+# latest mail above
+set sort_aux=reverse-last-date-received
+set sort_browser=reverse-date
+# don't group autmatically by subject
+set strict_threads
+# idle time before scanning
+set timeout = 3
+set wait_key = no
+ignore * # ignore all headers
+unignore date time from subject to cc  # header order
+unhdr_order *  # reset header order
+hdr_order From: Date: To: Cc: Bcc: Subject:  # new header order
+# Store message headers locally to speed things up.
+# If hcache is a folder, Mutt will create sub cache folders for each account which may speeds things even more up.
+set header_cache = ~/.mutt/cache
+# temporary files
+set tmpdir = ~/.mutt/tmp
+# strip headers and eval mimes when piping
+set pipe_decode
+# strip headers and eval mimes before searching
+set thorough_search
+# at the end of mail do not move to next message
+set pager_stop
+set date_format = "%m/%d"
+set index_format = "[%Z]  %D  %-20.20F  %s"
+# don't collapse on an unread message
+set uncollapse_jump
+# thread based on regex
+set sort_re
+set reply_regexp = "^(([Rr][Ee]?(\[[0-9]+\])?: *)?(\[[^]]+\] *)?)*"
+set quote_regexp = "^( {0,4}[>|:#%]| {0,4}[a-z0-9]+[>|]+)+"
+set status_chars  = " *%A"
+set status_format = "───[ Folder: %f ]───[%r%m messages%?n? (%n new)?%?d? (%d to delete)?%?t? (%t tagged)? ]───%>─%?p?( %p postponed )?───"
+# sidebar
+set sidebar_width   = 30
+set sidebar_visible = yes
+set sidebar_delim   = '|'
+color sidebar_new yellow default
+
+# mailcap file with file associations
+set mailcap_path = ~/.mutt/mailcap
+
+# automatically view text/html parts of message
+auto_view text/html
+# use html only when plain text is not available
+alternative_order text/plain text/html
+
+# load accounts settings
+source ~/.mutt/accounts/accounts
+
+# load bindings
+source ~/.mutt/bindings
+
+# load colorscheme
+source ~/.mutt/colors

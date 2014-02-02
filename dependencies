@@ -6,4 +6,9 @@ git
 vim
 zsh
 newsbeuter
+
+mutt-patched
+offlineimap
+msmtp
+urlview
 w3m

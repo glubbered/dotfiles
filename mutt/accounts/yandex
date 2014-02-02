@@ -1,0 +1,21 @@
+set from      = "wedens13@yandex.ru"
+set sendmail  = "/usr/bin/msmtp -a yandex"
+set mbox      = "+Yandex/[yandex].inbox"
+set postponed = "+Yandex/[yandex].drafts"
+set trash     = "+Yandex/[yandex].trash"
+# don't save outgoing messages to separate file to avoid duplicates
+unset record
+
+color status cyan default
+
+macro index D \
+    "<save-message>+Yandex/[yandex].trash<enter>" \
+    "move message to the trash"
+
+macro index S \
+    "<save-message>+Yandex/[yandex].spam<enter>"  \
+        "mark message as spam"
+
+macro index za "<shell-escape>/usr/bin/offlineimap -a yandex -q -o<enter>" "sync IMAP" # quick-sync ~/Mail immediately with offlineimap
+
+# vim:ft=muttrc

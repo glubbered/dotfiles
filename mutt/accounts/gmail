@@ -1,0 +1,21 @@
+set from      = "kirill.wedens@gmail.com"
+set sendmail  = "/usr/bin/msmtp -a gmail"
+set mbox      = "+Gmail/[gmail].inbox"
+set postponed = "+Gmail/[gmail].drafts"
+set trash     = "+Gmail/[gmail].trash"
+# don't save outgoing messages to separate file to avoid duplicates
+unset record
+
+color status green default
+
+macro index D \
+    "<save-message>+Gmail/[gmail].trash<enter>" \
+    "move message to the trash"
+
+macro index S \
+    "<save-message>+Gmail/[gmail].spam<enter>"  \
+        "mark message as spam"
+
+macro index za "<shell-escape>/usr/bin/offlineimap -a gmail -q -o<enter>" "sync IMAP" # quick-sync ~/Mail immediately with offlineimap
+
+# vim:ft=muttrc
