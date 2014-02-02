@@ -4,8 +4,9 @@ set line-graphics = utf-8
 
 bind generic F !git fetch
 bind generic + !git commit --amend
-bind main R !?git reset --hard %(commit)
-bind main P !?git push
+bind main R !git reset --hard %(commit)
+bind main P !git push
+bind main B !git rebase -i %(commit)
 bind main g move-first-line
 bind main G move-last-line
 bind diff g move-first-line
