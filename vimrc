@@ -971,7 +971,7 @@ endfunc
 let g:scala_completion_classpath = []
 let g:scala_completion_src_dirs = []
 
-let g:tmp_file = "/tmp/sc_buff"
+let g:tmp_file = "/tmp/sc_buff.scala"
 let g:scala_completion_initialized = 0
 
 " TODO: what if server went down?
