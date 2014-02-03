@@ -1,15 +1,16 @@
 # load mailboxes list
-source ~/.mutt/mailboxes
+mailboxes "+Eldis/[eldis].inbox" "+Yandex/[yandex].inbox" "+Gmail/[gmail].inbox" "+Eldis/[eldis].sent"
 
 # default mailbox
-set spoolfile = "+Gmail/[gmail].inbox"
+set spoolfile = "+Eldis/[eldis].inbox"
 
 # default account
-source ~/.mutt/accounts/gmail
+source ~/.mutt/accounts/eldis
 
 # switch to account
 folder-hook Gmail/* source ~/.mutt/accounts/gmail
 folder-hook Yandex/* source ~/.mutt/accounts/yandex
+folder-hook Eldis/* source ~/.mutt/accounts/eldis
 folder-hook . 'unset trash'
 
 # vim:ft=muttrc
