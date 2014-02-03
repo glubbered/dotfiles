@@ -1,0 +1,90 @@
+[general]
+ui = ttyui
+# don't force writes to disk
+fsync = False
+accounts = Gmail,Yandex
+# parallel synchronization
+maxsyncaccounts = 2
+pythonfile = ~/dotfiles/offlineimap.py
+
+# Gmail Account {{{
+[Account Gmail]
+localrepository = Gmail-Local
+remoterepository = Gmail-Remote
+status_backend = sqlite
+
+[Repository Gmail-Local]
+type = Maildir
+localfolders = ~/Mail/Gmail
+nametrans = lambda folder: re.sub('[gmail].spam', '[Gmail].Spam',
+                           re.sub('[gmail].drafts', '[Gmail].Drafts',
+                           re.sub('[gmail].sent', '[Gmail].Sent Mail',
+                           re.sub('[gmail].flagged', '[Gmail].Starred',
+                           re.sub('[gmail].trash', '[Gmail].Trash',
+                           re.sub('[gmail].important', '[Gmail].Important',
+                           re.sub('[gmail].archive', '[Gmail].All Mail',
+                           re.sub('[gmail].inbox', 'INBOX', folder))))))))
+
+[Repository Gmail-Remote]
+type = Gmail
+remoteusereval = get_username("imap.gmail.com")
+remotepasseval = get_password("imap.gmail.com")
+# Deleting a message from a Gmail folder via the IMAP interface will
+# just remove that folder's label from the message: the message will
+# continue to exist in the '[Gmail]/All Mail' folder.  If `realdelete`
+# is set to `True`, then deleted messages will really be deleted
+# during `offlineimap` sync, by moving them to the '[Gmail]/Trash'
+# folder.  BEWARE: this will delete a messages from *all folders* it
+# belongs to!
+#
+# See http://mail.google.com/support/bin/answer.py?answer=77657&topic=12815
+realdelete = no
+cert_fingerprint = 89091347184d41768bfc0da9fad94bfe882dd358
+folderfilter = lambda folder: folder not in ['[Gmail]/All Mail', '[Gmail]/Spam']
+nametrans = lambda folder: re.sub('.*Spam$',      '[gmail].spam',
+                           re.sub('.*Drafts$',    '[gmail].drafts',
+                           re.sub('.*Sent Mail$', '[gmail].sent',
+                           re.sub('.*Starred$',   '[gmail].flagged',
+                           re.sub('.*Trash$',     '[gmail].trash',
+                           re.sub('.*Important$', '[gmail].important',
+                           re.sub('.*All Mail$',  '[gmail].archive',
+                           re.sub('INBOX',        '[gmail].inbox', folder))))))))
+
+# }}}
+
+# Yandex Account {{{
+[Account Yandex]
+localrepository = Yandex-Local
+remoterepository = Yandex-Remote
+status_backend = sqlite
+
+[Repository Yandex-Local]
+type = Maildir
+localfolders = ~/Mail/Yandex
+nametrans = lambda folder: {'[yandex].sent':   '&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-',
+                            '[yandex].outbox': '&BBgEQQRFBD4ENARPBEkEOAQ1-',
+                            '[yandex].drafts': '&BCcENQRABD0EPgQyBDgEOgQ4-',
+                            '[yandex].spam':   '&BCEEPwQwBDw-',
+                            '[yandex].trash':  '&BCMENAQwBDsENQQ9BD0ESwQ1-',
+                            '[yandex].inbox':  'INBOX'
+                           }.get(folder, folder)
+
+
+[Repository Yandex-Remote]
+type = IMAP
+remotehost = imap.yandex.com
+remoteport = 143
+remoteusereval = get_username("imap.yandex.ru")
+remotepasseval = get_password("imap.yandex.ru")
+maxconnections = 3
+folderfilter = lambda folder: not folder in ['BCEEPwQwBDw-']
+nametrans = lambda folder: {'&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-': '[yandex].sent',
+                            '&BBgEQQRFBD4ENARPBEkEOAQ1-':         '[yandex].outbox',
+                            '&BCcENQRABD0EPgQyBDgEOgQ4-':         '[yandex].drafts',
+                            '&BCEEPwQwBDw-':                      '[yandex].spam',
+                            '&BCMENAQwBDsENQQ9BD0ESwQ1-':         '[yandex].trash',
+                            'INBOX':                              '[yandex].inbox'
+                           }.get(folder, folder)
+# }}}
+
+# vim: ft=cfg:foldlevel=0
