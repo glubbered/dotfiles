@@ -1,5 +1,4 @@
-/vimperator/info/*
 /vim/bundle/*
 /mutt/tmp/*
 /mutt/cache
-/mutt/mailboxes
+/mutt/accounts/accounts
