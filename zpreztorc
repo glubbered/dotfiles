@@ -21,7 +21,6 @@ zstyle ':prezto:load' pmodule \
   'prompt' \
   'git' \
   'dpkg' \
-  'command-not-found' \
   'history-substring-search' \
   'fasd' \
 
