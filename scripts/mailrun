@@ -25,7 +25,12 @@ fi
 new_mail_dir="$HOME/Mail/*/*inbox/new/"
 old_mail_count="$(find $new_mail_dir -type f | wc -l)"
 
+source $HOME/.Xdbus
 offlineimap -o -u quiet & monitor $!
+
+if [ $(which getmail) ] && [ -f $HOME/.getmail/getmailrc ]; then
+  getmail -q
+fi
 
 new_mail_count="$(find $new_mail_dir -type f | wc -l)"
 
