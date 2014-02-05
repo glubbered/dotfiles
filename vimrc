@@ -258,7 +258,18 @@ endif
 " }}}
 
 " FUNCTIONS {{{
-"
+
+" Rename current file
+function! RenameFile()
+    let old_name = expand('%')
+    let new_name = input('New file name: ', expand('%'), 'file')
+    if new_name != '' && new_name != old_name
+        exec ':saveas ' . new_name
+        exec ':silent !rm ' . old_name
+        redraw!
+    endif
+endfunction
+
 " Incremental ctags generation
 function! GenerateTagsIncrementally()
 python << EOF
@@ -455,6 +466,11 @@ call unite#filters#matcher_default#use(['matcher_fuzzy'])
 let g:unite_candidate_icon="▸"
 let g:unite_source_file_rec_max_cache_files = 0
 
+" flush MRU files more often
+let g:unite_source_mru_update_interval = 300
+" decrease number of shown candidates in MRU
+let g:unite_source_file_mru_limit = 20
+
 " }}}
 
 " BUILT-IN MAPPINGS {{{
@@ -590,6 +606,9 @@ nmap g<C-]> :exe "tjump /\\c".expand('<cword>')<Esc>
 noremap <leader>2 :set ts=2 sts=2 sw=2 expandtab<cr>
 noremap <leader>4 :set ts=4 sts=4 sw=4 expandtab<cr>
 
+" rename current file
+nmap <leader>rn :call RenameFile()<cr>
+
 " }}}
 
 " PLUGINS MAPPINGS {{{
@@ -648,6 +667,8 @@ nnoremap <leader>ack :Unite grep:.<CR>
 nnoremap <leader>b :Unite -quick-match buffer<CR>
 " tags navigation
 nnoremap <leader>t :GenerateTagsIncrementally<CR>:Unite -start-insert tag<CR>
+" recent files
+nnoremap <leader>r :<C-u>Unite -buffer-name=mru -start-insert file_mru<cr>
 
 " }}}
 
