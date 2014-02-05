@@ -73,7 +73,7 @@ function server() {
 psgrep() {
     if [ ! -z $1 ] ; then
         echo "Grepping for processes matching $1..."
-        ps aux | grep $1 | grep -v grep
+        ps aux | awk "/$1/ && !/awk/"
     else
         echo "!! Need name to grep for"
     fi
@@ -81,12 +81,11 @@ psgrep() {
 
 # Killing tomcat
 killtom() {
-    pids=( $(ps aux | grep apache-tomcat | grep 'bin/java' | grep -v grep | awk '{print $2}') )
+    pids=( $(ps aux | awk '/apache-tomcat/ && /bin\\/java && !/awk/ {print $2}') )
     if [ -z "$pids" ]
     then
         echo "Tomcat is not running!"
     else
-        #ps aux | grep <process> | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
         for pid in "${pids[@]}"; do
           echo "Killing Tomcat PID: $pid"
           kill -9 $pid
@@ -150,16 +149,10 @@ function installed_packages() {
 
 # Kills any process that matches a regexp passed to it
 killit() {
-    ps aux | grep -v "grep" | grep "$@" | awk '{print $2}' | xargs sudo kill
+    ps aux | awk "/$@/ && !/awk/ {print $2}" | xargs sudo kill
 }
 
 # }}}
-
-# history search
-# bindkey '^R' history-incremental-search-backward
-# bindkey '^S' history-incremental-search-forward
-# bindkey '^P' history-search-backward
-# bindkey '^N' history-search-forward
 
 if [ -f ~/.zshrc.local ]
 then
