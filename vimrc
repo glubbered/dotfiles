@@ -46,8 +46,6 @@ Bundle 'gre/play2vim'
 Bundle 'jelera/vim-javascript-syntax'
 " improved javascript indentation
 Bundle 'pangloss/vim-javascript'
-" syntax for jquery keywords and selectors
-Bundle 'itspriddle/vim-jquery'
 " coffeescript runtime files
 Bundle 'kchmck/vim-coffee-script'
 Bundle 'othree/html5.vim'
@@ -77,12 +75,10 @@ Bundle 'peterhoeg/vim-tmux'
 " make gvim-only colorschemes work transparently in terminal vim
 Bundle 'godlygeek/csapprox'
 " better-looking, more functional vim statusline
-" Bundle 'bling/vim-airline'
 Bundle 'itchyny/lightline.vim'
 
 " color schemes
 Bundle 'nanotech/jellybeans.vim'
-Bundle 'junegunn/seoul256.vim'
 
 if filereadable(expand('~/.vimrc.bundles.local'))
   source ~/.vimrc.bundles.local
@@ -336,28 +332,33 @@ endfunction
 
 " AUTO {{{
 
-" Strip whitespace on write
-autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+augroup vimrc
+  autocmd!
 
-" When editing a file, always jump to the last known cursor position.
-" Don't do it when the position is invalid or when inside an event handler
-" (happens when dropping a file on gvim).
-autocmd BufReadPost *
-      \ if line("'\"") > 0 && line("'\"") <= line("$") |
-      \ exe "normal g`\"" |
-      \ endif
+  " Strip whitespace on write
+  autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 
-" Save when losing focus
-au FocusLost    * :silent! wall
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it when the position is invalid or when inside an event handler
+  " (happens when dropping a file on gvim).
+  autocmd BufReadPost *
+        \ if line("'\"") > 0 && line("'\"") <= line("$") |
+        \ exe "normal g`\"" |
+        \ endif
 
-" treat scss files also as css
-autocmd BufNewFile,BufRead *.scss   ft=scss.css
+  " Save when losing focus
+  au FocusLost    * :silent! wall
 
-" set indentation to 4 spaces in java sources
-autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
+  " treat scss files also as css
+  autocmd BufNewFile,BufRead *.scss   ft=scss.css
 
-" comment string for tmux configs
-autocmd FileType tmux set commentstring=#\ %s
+  " set indentation to 4 spaces in java sources
+  autocmd FileType java setlocal ts=4 sts=4 sw=4 expandtab
+
+  " comment string for tmux configs
+  autocmd FileType tmux set commentstring=#\ %s
+
+augroup END
 
 " }}}
 
@@ -675,8 +676,7 @@ nnoremap <leader>r :<C-u>Unite -buffer-name=mru -start-insert file_mru<cr>
 " COLOR SCHEME {{{
 
 set background=dark   " assume a dark background
-let g:seoul256_background = 234
-colo seoul256
+colo jellybeans
 
 " }}}
 
