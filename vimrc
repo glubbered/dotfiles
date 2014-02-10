@@ -20,10 +20,10 @@ Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-git'
 " A Vim plugin which shows a git diff in the 'gutter' (sign column).
 " It shows whether each line has been added, modified, and where lines have been removed.
-Bundle 'airblade/vim-gitgutter'
+" Bundle 'airblade/vim-gitgutter'
 
 " defining custom text objects
-Bundle 'kana/vim-textobj-user'
+" Bundle 'kana/vim-textobj-user'
 " quick jumping over text
 Bundle 'justinmk/vim-sneak'
 " some sugar for netrw
@@ -43,20 +43,20 @@ Bundle 'derekwyatt/vim-sbt'
 Bundle 'gre/play2vim'
 
 " improved js syntax
-Bundle 'jelera/vim-javascript-syntax'
+" Bundle 'jelera/vim-javascript-syntax'
 " improved javascript indentation
-Bundle 'pangloss/vim-javascript'
+" Bundle 'pangloss/vim-javascript'
 " coffeescript runtime files
-Bundle 'kchmck/vim-coffee-script'
-Bundle 'othree/html5.vim'
-Bundle 'hail2u/vim-css3-syntax'
+" Bundle 'kchmck/vim-coffee-script'
+" Bundle 'othree/html5.vim'
+" Bundle 'hail2u/vim-css3-syntax'
 " runtime files for Haml, Sass, and SCSS
-Bundle 'tpope/vim-haml'
+" Bundle 'tpope/vim-haml'
 
 " maps for editing tags
-Bundle 'tpope/vim-ragtag'
+" Bundle 'tpope/vim-ragtag'
 " HTML/XML abbreviation editor
-Bundle 'mattn/emmet-vim'
+" Bundle 'mattn/emmet-vim'
 " Comment stuff out
 Bundle 'tpope/vim-commentary'
 " automatic closing of quotes, parenthesis, brackets, etc.
