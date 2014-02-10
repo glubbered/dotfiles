@@ -1,18 +1,209 @@
-# Source Prezto.
-if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
-  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
-fi
+# Initialize colors.
+autoload -U colors
+colors
+# Prompt support
+autoload -U promptinit
+promptinit
+# Line editor
+autoload edit-command-line;
+zle -N edit-command-line
 
 # filetype highlighting
 eval `dircolors -b ~/dotfiles/dircolors`
 
+# History {{{
+# store 10000 entries in history
+export HISTSIZE=10000
+export SAVEHIST=$HISTSIZE
+# history file
+export HISTFILE="$HOME/.zhistory"
+# prevent history from recording duplicate entries
+setopt hist_ignore_all_dups
+setopt hist_ignore_dups
+# prevent particular entries from being recorded into a history by preceding them with at least one space
+setopt hist_ignore_space
+# write to the history file immediately, not when the shell exits.
+setopt inc_append_history
+# Share history between all sessions.
+setopt share_history
+# Do not write a duplicate event to the history file.
+setopt hist_save_no_dups
+# }}}
+
+# cd without typing cd command
+setopt autocd
+# activate complex pattern globbing
+setopt extended_glob
+# include dotfiles in globbing
+setopt glob_dots
+# Append a trailing `/' to all directory names resulting from globbing
+setopt mark_dirs
+# Ignore lines prefixed with '#'.
+setopt interactivecomments
+# Don't kill background jobs when shell exits
+setopt nohup
+# avoid "beep"ing
+setopt nobeep
+
+# Completion {{{
+# Enable tab-completion
+autoload -U compinit
+compinit
+setopt complete_in_word    # complete from both ends of a word.
+setopt always_to_end       # move cursor to the end of a completed word.
+setopt path_dirs           # perform path search even on command names with slashes.
+setopt auto_menu           # show completion menu on a succesive tab press.
+setopt auto_list           # automatically list choices on ambiguous completion.
+setopt auto_param_slash    # if completed parameter is a directory, add a trailing slash.
+unsetopt menu_complete     # do not autoselect the first completion entry.
+unsetopt flow_control      # disable start/stop characters in shell editor.
+
+# use caching to make completion for cammands such as dpkg and apt usable.
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path "$home/.zcompcache"
+# case insensitive completion
+zstyle ':completion:*' matcher-list 'm:{a-za-z}={a-za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+unsetopt case_glob
+# graphical menu with arrows navigation
+zstyle ':completion:*:*:*:*:*' menu select
+# group enties by type
+zstyle ':completion:*:matches' group 'yes'
+# describe options in full
+zstyle ':completion:*:options' description 'yes'
+zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
+zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
+zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
+zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
+# use the name of the tag as group name
+zstyle ':completion:*' group-name ''
+# provide verbose completion information
+zstyle ':completion:*' verbose yes
+
+# Fuzzy match mistyped completions.
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
+
+# Directories
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
+zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
+zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'users' 'expand'
+zstyle ':completion:*' squeeze-slashes true
+
+# Don't complete uninteresting users...
+zstyle ':completion:*:*:*:users' ignored-patterns \
+  adm amanda apache avahi beaglidx bin cacti canna clamav daemon \
+  dbus distcache dovecot fax ftp games gdm gkrellmd gopher \
+  hacluster haldaemon halt hsqldb ident junkbust ldap lp mail \
+  mailman mailnull mldonkey mysql nagios \
+  named netdump news nfsnobody nobody nscd ntp nut nx openvpn \
+  operator pcap postfix postgres privoxy pulse pvm quagga radvd \
+  rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs '_*'
+# ... unless we really want to.
+zstyle '*' single-ignored show
+
+# Kill
+zstyle ':completion:*:*:*:*:processes' command 'ps -u $USER -o pid,user,comm -w'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:*:kill:*' force-list always
+zstyle ':completion:*:*:kill:*' insert-ids single
+
+# Auto-completion for ssh hosts
+zstyle -e ':completion::*:hosts' hosts 'reply=($(sed -e "/^#/d" -e "s/ .*\$//" -e "s/,/ /g" /etc/ssh_known_hosts(N) ~/.ssh/known_hosts(N) 2>/dev/null | xargs) $(grep \^Host ~/.ssh/config(N) | cut -f2 -d\  2>/dev/null | xargs))'
+
+# ignore completion functions for commands you don't have
+zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
+# }}}
+
+# Prompt {{{
+# Allow for functions in the prompt.
+setopt prompt_subst
+function parse_git_branch {
+  ref=$(git symbolic-ref HEAD 2> /dev/null) || return
+  echo " %F{108}⭠ %F{35}${ref#refs/heads/}"
+}
+function get_pwd() {
+ echo "${PWD/#$HOME/~}"
+}
+# Prompt depends on vim mode
+PROMPT='%F{cyan}$(get_pwd)$(parse_git_branch) ${vim_mode}%{$reset_color%} '
+# }}}
+
+# Vi mode {{{
+bindkey -v
+
+# Vi mode indication {{{
+vim_ins_mode="%F{red}❯%F{green}❯%F{yellow}❯"
+vim_cmd_mode="%F{red}❮%F{green}❮%F{yellow}❮"
+vim_mode=$vim_ins_mode
+
+function zle-keymap-select {
+  vim_mode="${${KEYMAP/vicmd/${vim_cmd_mode}}/(main|viins)/${vim_ins_mode}}"
+  zle reset-prompt
+}
+zle -N zle-keymap-select
+
+function zle-line-finish {
+  vim_mode=$vim_ins_mode
+}
+zle -N zle-line-finish
+# }}}
+
+# Bindings {{{
+bindkey '^P' up-history
+bindkey '^N' down-history
+bindkey '^r' history-incremental-search-backward
+bindkey "^K" kill-whole-line
+bindkey "^A" beginning-of-line
+bindkey "^E" end-of-line
+bindkey -M vicmd "/" history-incremental-search-backward
+bindkey -M vicmd "?" history-incremental-search-forward
+bindkey -M vicmd v edit-command-line
+# }}}
+
+# }}}
+
+
+# Directories stack {{{
+setopt auto_pushd           # push the old directory onto the stack on cd.
+setopt pushd_ignore_dups    # do not store duplicates in the stack.
+setopt pushd_silent         # do not print the directory stack after pushd or popd.
+setopt pushd_to_home        # push to home directory when no argument is given.
+alias d='dirs -v'
+for index ({1..9}) alias "$index"="cd +${index}"; unset index
+# }}}
+
 # consistent terminfo
 export TERM=screen-256color
+export EDITOR="vim"
+export VISUAL="vim"
+export PAGER="less"
+export GREP_OPTIONS='--color=auto'
+export GREP_COLOR='37;45'
+
 
 # faster switching between vi modes
 export KEYTIMEOUT=1
 
 # Aliases {{{
+
+alias g=git
+alias ls="ls -bh -CF --color=auto"
+alias la="ls -lhAF"
+# Always highlight grep search term
+alias grep='grep --color=auto'
+
+alias '..'='cd ..'
+# The -g makes them global aliases, so they're expaned even inside commands
+alias -g ...='../..'
+alias -g ....='../../..'
+alias -g .....='../../../..'
+
+alias extract='patool extract'
 
 # run tmux in color mode
 alias tmux='tmux -2'
@@ -60,6 +251,19 @@ alias newsbeuter='newsbeuter -C ~/.newsbeuter.conf -u ~/yandex/newsbeuter/urls'
 #   done
 # }
 
+function zshcolors() {
+  for COLOR in $(seq 0 255)
+  do
+    for STYLE in "38;5"
+    do
+      TAG="\033[${STYLE};${COLOR}m"
+      STR="${STYLE};${COLOR}"
+      echo -ne "${TAG}${STR}${NONE}  "
+    done
+    echo
+  done
+}
+
 # # Start an HTTP server from a directory, optionally specifying the port
 # function server() {
 #   local port="${1:-8000}"
@@ -91,6 +295,12 @@ killtom() {
           kill -9 $pid
         done
     fi
+}
+
+# mkdir, cd into it (via http://onethingwell.org/post/586977440/mkcd-improved)
+function mkcd () {
+    mkdir -p "$*"
+    cd "$*"
 }
 
 # # Find files and exec commands at them.
