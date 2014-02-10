@@ -46,9 +46,14 @@ setopt nohup
 setopt nobeep
 
 # Completion {{{
+#
+# add custom completion scripts
+fpath=(~/.zsh/completion $fpath)
+
 # Enable tab-completion
 autoload -U compinit
 compinit
+
 setopt complete_in_word    # complete from both ends of a word.
 setopt always_to_end       # move cursor to the end of a completed word.
 setopt path_dirs           # perform path search even on command names with slashes.
@@ -70,12 +75,12 @@ zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*:matches' group 'yes'
 # describe options in full
 zstyle ':completion:*:options' description 'yes'
-zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
-zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
-zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
-zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
-zstyle ':completion:*:default' list-prompt '%S%M matches%s'
-zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
+# zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
+# zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
+# zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
+# zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
+# zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+# zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
 # use the name of the tag as group name
 zstyle ':completion:*' group-name ''
 # provide verbose completion information
@@ -93,44 +98,46 @@ zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'users' 'expand'
 zstyle ':completion:*' squeeze-slashes true
 
-# Don't complete uninteresting users...
-zstyle ':completion:*:*:*:users' ignored-patterns \
-  adm amanda apache avahi beaglidx bin cacti canna clamav daemon \
-  dbus distcache dovecot fax ftp games gdm gkrellmd gopher \
-  hacluster haldaemon halt hsqldb ident junkbust ldap lp mail \
-  mailman mailnull mldonkey mysql nagios \
-  named netdump news nfsnobody nobody nscd ntp nut nx openvpn \
-  operator pcap postfix postgres privoxy pulse pvm quagga radvd \
-  rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs '_*'
-# ... unless we really want to.
-zstyle '*' single-ignored show
-
 # Kill
+# show user processes
 zstyle ':completion:*:*:*:*:processes' command 'ps -u $USER -o pid,user,comm -w'
+# prettier menu
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
+# show menu with processes
 zstyle ':completion:*:*:kill:*' menu yes select
+# always show menu
 zstyle ':completion:*:*:kill:*' force-list always
-zstyle ':completion:*:*:kill:*' insert-ids single
-
-# Auto-completion for ssh hosts
-zstyle -e ':completion::*:hosts' hosts 'reply=($(sed -e "/^#/d" -e "s/ .*\$//" -e "s/,/ /g" /etc/ssh_known_hosts(N) ~/.ssh/known_hosts(N) 2>/dev/null | xargs) $(grep \^Host ~/.ssh/config(N) | cut -f2 -d\  2>/dev/null | xargs))'
 
 # ignore completion functions for commands you don't have
 zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
+
 # }}}
 
 # Prompt {{{
+
 # Allow for functions in the prompt.
 setopt prompt_subst
+
 function parse_git_branch {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || return
   echo " %F{108}⭠ %F{35}${ref#refs/heads/}"
 }
+
+# collapsed path
 function get_pwd() {
- echo "${PWD/#$HOME/~}"
+  local pwd="${PWD/#$HOME/~}"
+
+  if [[ "$pwd" == (#m)[/~] ]]; then
+    echo $MATCH
+    unset MATCH
+  else
+    echo "${${${(@j:/:M)${(@s:/:)pwd}##.#?}:h}%/}/${pwd:t}"
+  fi
 }
+
 # Prompt depends on vim mode
-PROMPT='%F{cyan}$(get_pwd)$(parse_git_branch) ${vim_mode}%{$reset_color%} '
+PROMPT='%F{cyan}$(get_pwd)$(parse_git_branch) ${vim_mode}%f%k '
+
 # }}}
 
 # Vi mode {{{
@@ -167,7 +174,6 @@ bindkey -M vicmd v edit-command-line
 
 # }}}
 
-
 # Directories stack {{{
 setopt auto_pushd           # push the old directory onto the stack on cd.
 setopt pushd_ignore_dups    # do not store duplicates in the stack.
@@ -185,6 +191,31 @@ export PAGER="less"
 export GREP_OPTIONS='--color=auto'
 export GREP_COLOR='37;45'
 
+# Uses the command-not-found package zsh support
+# as seen in http://www.porcheron.info/command-not-found-for-zsh/
+# this is installed in Ubuntu
+[[ -e /etc/zsh_command_not_found ]] && source /etc/zsh_command_not_found
+
+# fasd https://github.com/clvv/fasd {{{
+cache_file=/home/wedens/dotfiles/zprezto/modules/fasd/cache.zsh
+# command and word modes completion definitions
+init_args=(zsh-hook zsh-ccomp zsh-ccomp-install zsh-wcomp zsh-wcomp-install)
+fasd --init "$init_args[@]" >! "$cache_file" 2> /dev/null
+source "$cache_file"
+unset cache_file init_args
+
+function fasd_cd {
+  local fasd_ret="$(fasd -d "$@")"
+  if [[ -d "$fasd_ret" ]]; then
+    cd "$fasd_ret"
+  else
+    print "$fasd_ret"
+  fi
+}
+
+# Changes the current working directory interactively.
+alias j='fasd_cd -i'
+# }}}
 
 # faster switching between vi modes
 export KEYTIMEOUT=1
@@ -202,6 +233,18 @@ alias '..'='cd ..'
 alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
+
+# Upgrades outdated packages.
+alias debU='sudo apt-get update && sudo apt-get upgrade'
+# Updates the package lists.
+alias debu='sudo apt-get update'
+# Installs packages from repositories.
+# # Installs packages from repositories.
+alias debi='sudo apt-get install'
+# Removes packages, their configuration, and unneeded dependencies.
+alias debX='sudo apt-get remove --purge && sudo apt-get autoremove --purge'
+# Searches for packages.
+alias debs='apt-cache search'
 
 alias extract='patool extract'
 
