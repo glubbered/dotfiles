@@ -52,7 +52,7 @@ fpath=(~/.zsh/completion $fpath)
 
 # Enable tab-completion
 autoload -U compinit
-compinit
+compinit -i
 
 setopt complete_in_word    # complete from both ends of a word.
 setopt always_to_end       # move cursor to the end of a completed word.
