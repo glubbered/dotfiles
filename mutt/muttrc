@@ -20,6 +20,8 @@ set forward_format = "Fwd: %s"
 set forward_decode
 # quote email body when forwarding
 set forward_quote
+#
+set text_flowed=yes
 # copy of the message you are replying to is included in your reply
 set include
 #
