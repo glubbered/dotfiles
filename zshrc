@@ -63,6 +63,7 @@ setopt auto_param_slash    # if completed parameter is a directory, add a traili
 unsetopt menu_complete     # do not autoselect the first completion entry.
 unsetopt flow_control      # disable start/stop characters in shell editor.
 
+zstyle ':completion:*' list-colors ''
 # use caching to make completion for cammands such as dpkg and apt usable.
 zstyle ':completion::complete:*' use-cache on
 zstyle ':completion::complete:*' cache-path "$home/.zcompcache"
@@ -92,10 +93,11 @@ zstyle ':completion:*:match:*' original only
 zstyle ':completion:*:approximate:*' max-errors 1 numeric
 
 # Directories
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+# zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
 zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'users' 'expand'
+# remove the trailing slash
 zstyle ':completion:*' squeeze-slashes true
 
 # Kill
@@ -103,9 +105,8 @@ zstyle ':completion:*' squeeze-slashes true
 zstyle ':completion:*:*:*:*:processes' command 'ps -u $USER -o pid,user,comm -w'
 # prettier menu
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
-# show menu with processes
+# completing process IDs with menu selection
 zstyle ':completion:*:*:kill:*' menu yes select
-# always show menu
 zstyle ':completion:*:*:kill:*' force-list always
 
 # ignore completion functions for commands you don't have
@@ -119,8 +120,30 @@ zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
 setopt prompt_subst
 
 function parse_git_branch {
-  ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-  echo " %F{108}⭠ %F{35}${ref#refs/heads/}"
+  local git_status="`git status -unormal 2>&1`"
+  if ! [[ "$git_status" =~ Not\ a\ git\ repo ]]; then
+    # try to output tag
+    tag=$(git describe --tags --exact-match 2> /dev/null)
+    if [[ $? -eq 0 ]]; then
+      echo " %F{108}✔ %F{35}$tag"
+    else
+      ref=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD 2> /dev/null)
+      # detached head
+      if [[ "$ref" == "HEAD" ]]; then
+        local current_commit=$(git rev-parse HEAD | cut -c1-10 2> /dev/null)
+        echo " %F{108}◉ %F{35}detached:%F{130}$current_commit"
+      # branch
+      else
+        local repo_root=$(git rev-parse --show-toplevel 2> /dev/null)
+        # merging conflicts
+        if [[ -f "$repo_root/.git/MERGE_HEAD" ]]; then
+          echo " %F{108}☠ %F{35}${ref#refs/heads/}:%F{196}merge"
+        else
+          echo " %F{108}⭠ %F{35}${ref#refs/heads/}"
+        fi
+      fi
+    fi
+  fi
 }
 
 # collapsed path
